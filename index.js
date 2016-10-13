@@ -10,16 +10,23 @@ app.use(express.static(__dirname));
 var players = [];
 var startGame = 0;
 var cards = [2,2,2,2,2];
+var AINames = ["Robert","Patrick","Donna","James","Alex","Gil"];
+var turn = 0;
 io.on('connection',function(socket){
   console.log(socket.id+" is connected");
   socket.on('disconnect',function(){
     console.log(socket.id+" is disconnected");
-    players.pull();
+    players.splice(getIndex(socket.id),1);
   });
-  players.push({type:"human",playerId:socket.id,coins:2,card1:null,card2:null});
+	socket.on('join',function(name){
+			console.log(name+" has joined");
+			players.push({type:"human",name:name,playerId:socket.id,coins:2,card1:null,card2:null});
+			io.emit('hasJoined',name);
+	});
   socket.on('addAiPlayer',function(){
-    players.push({type:"npc",playerId:"npc_"+players.length,coins:2,card1:null,card2:null});
-    startGame++;
+    players.push({type:"npc",name:null,playerId:"npc_"+players.length,coins:2,card1:null,card2:null});
+		io.emit('hasJoined',name);
+		startGame++;
     console.log(players);
   });
   socket.on('startGame',function(){
@@ -61,13 +68,25 @@ io.on('connection',function(socket){
             break;
           }
         }
+				io.to(players[i].emit('begin',players[i]));
+				console.log(players[i]);
       }
-      io.emit('begin',players);
+			io.to(players[turn].emit('playTurn'));
     }
   });
+	socket.on('getIncome',function(){
+		console.log(players[getIndex(socket.id)].name+" took income");
+		players[getIndex(socket.id)].coins++;
+		turn = (turn + 1)%players.length;
+		console.log(players[getIndex(socket.id)]);
+	});
 });
 server.listen(8080);
 
-function shuffle(player){
-
+function getIndex(id){
+	for(var i=0;i<players.length;i++){
+		if(players[i].playerId === id){
+			return i;
+		}
+	}
 }
