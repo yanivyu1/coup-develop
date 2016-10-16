@@ -22,19 +22,23 @@ io.on('connection',function(socket){
 			console.log(name+" has joined");
 			players.push({type:"human",name:name,playerId:socket.id,coins:2,card1:null,card2:null});
 			io.emit('hasJoined',name);
+			socket.emit('joined');
 	});
   socket.on('addAiPlayer',function(){
-    players.push({type:"npc",name:null,playerId:"npc_"+players.length,coins:2,card1:null,card2:null});
-		io.emit('hasJoined',name);
+		var nameInd = Math.round(Math.random()*AINames.length);
+		console.log(nameInd);
+    players.push({type:"npc",name:AINames[nameInd],playerId:"npc_"+players.length,coins:2,card1:null,card2:null});
+		io.emit('hasJoined',AINames[nameInd]);
 		startGame++;
     console.log(players);
+		AINames.splice(nameInd,1);
   });
   socket.on('startGame',function(){
     startGame++;
     if(startGame == players.length){
       for(var i=0;i<players.length;i++){
         while(players[i].card1 !== null && players[i].card2 !== null){
-          var num = Math.random()*5;
+          var num = Math.round(Math.random()*4);
           switch(num){
             case 0:
             if(cards[0]>0){

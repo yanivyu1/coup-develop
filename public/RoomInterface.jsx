@@ -1,5 +1,5 @@
 var React = require('react');
-
+var namesTemp = [];
 var RoomInterface = React.createClass({
     getInitialState: function() {
       return {
@@ -13,7 +13,11 @@ var RoomInterface = React.createClass({
       socket.on('jasLeft',this._left);
     },
     _joined:function(name){
-      names.push(name);
+      namesTemp.push(name);
+      this.setState({
+        names:namesTemp
+      });
+      console.log(this.state.names);
     },
     _left:function(name){
       var ind = names.indexOf(name);
@@ -25,12 +29,14 @@ var RoomInterface = React.createClass({
     },
     render:function(){
       return(
-        <div className="nameSpace">
-          {this.state.names.map(function(child){
-            <h3>{child}</h3>
-          })}
-          <br/><button onClick={this._addAiPlayer}>ADD AIPLAYER</button>
-        </div>
+        <div>
+          <div className="nameSpace">
+            {this.state.names.map(function(child){
+              return(<h3>{child}</h3>)
+            })}
+          </div>
+          <br/><button className="aiButton" disabled={this.state.names.length >= 5} onClick={this._addAiPlayer}>ADD AI PLAYER</button>
+      </div>
       );
     }
 });
