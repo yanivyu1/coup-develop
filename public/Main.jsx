@@ -9,14 +9,17 @@ var Main = React.createClass({
     return {
       join:true,
       myTurn:false,
-      appear:false
+      appear:false,
+      start:false,
+      addAiPlayer:true
     };
   },
   _play:function(){
     console.log("play your turn");
     this.setState({
       myTurn:true,
-      join:false
+      join:false,
+      addAiPlayer:false
     });
   },
   _chellange:function(){
@@ -26,23 +29,33 @@ var Main = React.createClass({
   },
   _joined:function(){
     this.setState({
-      join:false
+      join:false,
+      start:true
+    });
+  },
+  _start:function(player){
+    console.log(player);
+    this.setState({
+      start:false,
+      addAiPlayer:false
     });
   },
   componentDidMount: function() {
     socket.on('playTurn',this._play);
     socket.on('chellange',this._chellange);
     socket.on('joined',this._joined);
+    socket.on('begin',this._start);
   },
   render:function(){
     return(
       <div>
         <h1 className="title">Welcom to coup treason</h1>
         <div className="roomInterface">
-          <RoomInterface/>
+          <RoomInterface visible={this.state.addAiPlayer}/>
         </div>
         <div>
-          {this.state.join ? <Join/> : <Start/>}
+          {this.state.join ? <Join/> : null}
+          {this.state.start ? <Start/> : null}
         </div>
         <div>
           {this.state.myTurn ? <UserInterface/> : null}
@@ -55,8 +68,16 @@ var Main = React.createClass({
   }
 });
 var Start = React.createClass({
+  getInitialState: function() {
+    return {
+      visible:true
+    };
+  },
   startGame:function(){
     socket.emit('startGame');
+    this.setState({
+      visible:false
+    });
   },
   render:function(){
     return(

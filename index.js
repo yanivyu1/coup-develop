@@ -28,17 +28,18 @@ io.on('connection',function(socket){
 		var nameInd = Math.round(Math.random()*AINames.length);
 		console.log(nameInd);
     players.push({type:"npc",name:AINames[nameInd],playerId:"npc_"+players.length,coins:2,card1:null,card2:null});
-		io.emit('hasJoined',AINames[nameInd]);
 		startGame++;
-    console.log(players);
+		console.log(players);
 		AINames.splice(nameInd,1);
+		io.emit('hasJoined',players[players.length-1].name);
   });
   socket.on('startGame',function(){
     startGame++;
-    if(startGame == players.length){
+    if(startGame === players.length){
       for(var i=0;i<players.length;i++){
-        while(players[i].card1 !== null && players[i].card2 !== null){
-          var num = Math.round(Math.random()*4);
+				console.log("start");
+        while(players[i].card2 === null){
+          var num = Math.floor(Math.random()*4);
           switch(num){
             case 0:
             if(cards[0]>0){
@@ -72,10 +73,10 @@ io.on('connection',function(socket){
             break;
           }
         }
-				io.to(players[i].emit('begin',players[i]));
+				io.to(players[i].playerId).emit('begin',players[i]);
 				console.log(players[i]);
       }
-			io.to(players[turn].emit('playTurn'));
+			io.to(players[turn].playerId).emit('playTurn');
     }
   });
 	socket.on('getIncome',function(){

@@ -3,10 +3,13 @@ var React = require('react');
 var UserInterface = React.createClass({
   getInitialState: function() {
     return {
-      income:false,foreignAid:false,tax:false,steal:false,exchange:false,assassinate:false,coup:false
+      income:false,foreignAid:false,tax:false,steal:false,exchange:false,assassinate:false,coup:false,coins:0
     };
   },
   getIncome:function(){
+    this.setState({
+        income:true,foreignAid:true,tax:true,steal:true,exchange:true,assassinate:true,coup:true
+    });
     socket.emit('getIncome');
     console.log("get income");
   },
@@ -14,13 +17,18 @@ var UserInterface = React.createClass({
     return(
       <div className="userInterface">
         <div className="actions">
-          <button disabled={this.state.income} onClick={this.getIncome}>Income</button>
-          <button disabled={this.state.foreignAid} onClick={this.getForeignAid}>Foreign Aid</button>
-          <button disabled={this.state.tax} onClick={this.getTax}>Tax</button>
-          <button disabled={this.state.steal} onClick={this.steal}>Steal</button>
-          <button disabled={this.state.exchange} onClick={this.exchange}>Exchange</button>
-          <button disabled={this.state.assassinate} onClick={this.assassinate}>Assassinate</button>
-          <button disabled={this.state.coup} onClick={this.coup}>Coup</button>
+          <button className="UIButton" disabled={this.state.income} onClick={this.getIncome}>Income</button>
+          <button className="UIButton" disabled={this.state.foreignAid} onClick={this.getForeignAid}>Foreign Aid</button>
+          <button className="UIButton" disabled={this.state.tax} onClick={this.getTax}>Tax</button>
+          <button className="UIButton" disabled={this.state.steal} onClick={this.steal}>Steal</button>
+          <button className="UIButton" disabled={this.state.exchange} onClick={this.exchange}>Exchange</button>
+          <button className="UIButton" disabled={this.state.assassinate} onClick={this.assassinate}>Assassinate</button>
+          <button className="UIButton" disabled={this.state.coup} onClick={this.coup}>Coup</button>
+        </div>
+        <div className="sims">
+          <div className="coinsImage">
+          </div>
+          <h1>{this.state.coins}</h1>
         </div>
     </div>
     );
