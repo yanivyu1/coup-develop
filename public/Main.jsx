@@ -11,7 +11,8 @@ var Main = React.createClass({
       myTurn:false,
       appear:false,
       start:false,
-      addAiPlayer:true
+      addAiPlayer:true,
+      coins:2
     };
   },
   _play:function(){
@@ -19,10 +20,12 @@ var Main = React.createClass({
     this.setState({
       myTurn:true,
       join:false,
-      addAiPlayer:false
+      addAiPlayer:false,
+      appear:false
     });
   },
   _chellange:function(){
+    console.log("chellange");
     this.setState({
       appear:true
     });
@@ -40,11 +43,18 @@ var Main = React.createClass({
       addAiPlayer:false
     });
   },
+  _recivedCoins:function(num){
+    this.setState({
+      coins:num,
+      myTurn:false
+    });
+  },
   componentDidMount: function() {
     socket.on('playTurn',this._play);
-    socket.on('chellange',this._chellange);
+    socket.on('Chellange',this._chellange);
     socket.on('joined',this._joined);
     socket.on('begin',this._start);
+    socket.on('recivedCoins',this._recivedCoins);
   },
   render:function(){
     return(
@@ -62,6 +72,11 @@ var Main = React.createClass({
         </div>
         <div>
           {this.state.appear ? <Chellange/> : null}
+        </div>
+        <div className="sims">
+          <div className="coinsImage">
+          </div>
+          <h1>{this.state.coins}</h1>
         </div>
       </div>
     );

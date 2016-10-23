@@ -87,13 +87,15 @@ io.on('connection',function(socket){
 		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
 	});
 	socket.on('getForeignAid',function(){
+		console.log("foreign aid");
 		socket.broadcast.emit('Chellange');
-		socket.on('allow',function(){
-			players[getIndex(socket.id)].coins+=2;
-			turn = (turn + 1)%players.length;
-			console.log(players[getIndex(socket.id)]);
-			socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
-		});
+	});
+	socket.on('allow',function(){
+		players[getIndex(socket.id)].coins+=2;
+		console.log(players[getIndex(socket.id)]);
+		io.to(players[turn].playerId).emit('recivedCoins',players[getIndex(socket.id)].coins);
+		turn = (turn + 1)%players.length;
+		io.to(players[turn].playerId).emit('playTurn');
 	});
 });
 server.listen(8080);
