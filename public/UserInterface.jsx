@@ -13,6 +13,20 @@ var UserInterface = React.createClass({
     socket.emit('getIncome');
     console.log("get income");
   },
+  foreignAid:function(){
+    this.setState({
+        income:true,foreignAid:true,tax:true,steal:true,exchange:true,assassinate:true,coup:true
+    });
+    socket.emit('getForeignAid');
+  },
+  componentDidMount: function() {
+    socket.on('recivedCoins',this._recivedCoins);
+  },
+  _recivedCoins:function(num){
+    this.setState({
+      coins:num
+    });
+  },
   render:function(){
     return(
       <div className="userInterface">

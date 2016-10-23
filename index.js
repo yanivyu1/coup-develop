@@ -84,6 +84,16 @@ io.on('connection',function(socket){
 		players[getIndex(socket.id)].coins++;
 		turn = (turn + 1)%players.length;
 		console.log(players[getIndex(socket.id)]);
+		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+	});
+	socket.on('getForeignAid',function(){
+		socket.broadcast.emit('Chellange');
+		socket.on('allow',function(){
+			players[getIndex(socket.id)].coins+=2;
+			turn = (turn + 1)%players.length;
+			console.log(players[getIndex(socket.id)]);
+			socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+		});
 	});
 });
 server.listen(8080);
