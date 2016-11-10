@@ -85,15 +85,16 @@ io.on('connection',function(socket){
 		turn = (turn + 1)%players.length;
 		console.log(players[getIndex(socket.id)]);
 		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+		io.to(players[turn].playerId).emit('playTurn');
 	});
 	socket.on('getForeignAid',function(){
 		console.log("foreign aid");
 		socket.broadcast.emit('Chellange');
 	});
 	socket.on('allow',function(){
-		players[getIndex(socket.id)].coins+=2;
+		players[turn].coins+=2;
 		console.log(players[getIndex(socket.id)]);
-		io.to(players[turn].playerId).emit('recivedCoins',players[getIndex(socket.id)].coins);
+		io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
 		turn = (turn + 1)%players.length;
 		io.to(players[turn].playerId).emit('playTurn');
 	});

@@ -76,7 +76,7 @@ var Main = React.createClass({
         <div className="sims">
           <div className="coinsImage">
           </div>
-          <h1>{this.state.coins}</h1>
+          <h1 className="coins">{this.state.coins}</h1>
         </div>
       </div>
     );
