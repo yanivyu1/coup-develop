@@ -4,6 +4,7 @@ import UserInterface from "UserInterface";
 import Chellange from "Chellange";
 import Join from "Join";
 import RoomInterface from "RoomInterface";
+import Cards from "Cards";
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -77,6 +78,9 @@ var Main = React.createClass({
           <div className="coinsImage">
           </div>
           <h1 className="coins">{this.state.coins}</h1>
+        </div>
+        <div>
+          {this.state.start ? <Cards/> : null}
         </div>
       </div>
     );
