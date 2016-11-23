@@ -61,7 +61,7 @@ io.on('connection',function(socket){
             break;
             case 3:
             if(cards[3]>0){
-              players[i].card1 === null ? players[i].card1 = "Assassian" : players[i].card2 = "Assassian";
+              players[i].card1 === null ? players[i].card1 = "Assassin" : players[i].card2 = "Assassin";
               cards[3]--;
             }
             break;

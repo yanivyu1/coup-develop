@@ -5,6 +5,7 @@ import Chellange from "Chellange";
 import Join from "Join";
 import RoomInterface from "RoomInterface";
 import Cards from "Cards";
+var hand;
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -13,6 +14,7 @@ var Main = React.createClass({
       appear:false,
       start:false,
       addAiPlayer:true,
+      play:false,
       coins:2
     };
   },
@@ -38,10 +40,12 @@ var Main = React.createClass({
     });
   },
   _start:function(player){
+    hand = player;
     console.log(player);
     this.setState({
       start:false,
-      addAiPlayer:false
+      addAiPlayer:false,
+      play:true
     });
   },
   _recivedCoins:function(num){
@@ -79,8 +83,8 @@ var Main = React.createClass({
           </div>
           <h1 className="coins">{this.state.coins}</h1>
         </div>
-        <div>
-          {this.state.start ? <Cards/> : null}
+        <div className="cards">
+          {this.state.play ? <Cards cards={hand}/> : null}
         </div>
       </div>
     );
