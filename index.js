@@ -89,7 +89,7 @@ io.on('connection',function(socket){
 	});
 	socket.on('getForeignAid',function(){
 		console.log("foreign aid");
-		socket.broadcast.emit('Chellange');
+		socket.broadcast.emit('Chellange',"foreign aid");
 	});
 	socket.on('allow',function(){
 		players[turn].coins+=2;
@@ -97,6 +97,13 @@ io.on('connection',function(socket){
 		io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
 		turn = (turn + 1)%players.length;
 		io.to(players[turn].playerId).emit('playTurn');
+	});
+	socket.on('block',function(action){
+		console.log("block "+action);
+		socket.broadcast.emit('chellangeCard',action);
+	});
+	socket.on('chellangeAction',function(action){
+		console.log("chellangeAction "+action);
 	});
 });
 server.listen(8080);

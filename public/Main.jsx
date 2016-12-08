@@ -5,6 +5,8 @@ import Chellange from "Chellange";
 import Join from "Join";
 import RoomInterface from "RoomInterface";
 import Cards from "Cards";
+import chellangeCard from "ChellangeCard";
+var actionTemp;
 var hand;
 var Main = React.createClass({
   getInitialState: function() {
@@ -13,6 +15,7 @@ var Main = React.createClass({
       myTurn:false,
       appear:false,
       start:false,
+      chellangeCard:false,
       addAiPlayer:true,
       play:false,
       coins:2
@@ -27,10 +30,16 @@ var Main = React.createClass({
       appear:false
     });
   },
-  _chellange:function(){
-    console.log("chellange");
+  _chellange:function(action){
+    console.log("chellange "+action);
+    actionTemp = action;
     this.setState({
       appear:true
+    });
+  },
+  _chellangeAction:function(action){
+    this.setState({
+      chellangeCard:true 
     });
   },
   _joined:function(){
@@ -57,6 +66,7 @@ var Main = React.createClass({
   componentDidMount: function() {
     socket.on('playTurn',this._play);
     socket.on('Chellange',this._chellange);
+    socket.on('chellangeCard',this._chellangeAction);
     socket.on('joined',this._joined);
     socket.on('begin',this._start);
     socket.on('recivedCoins',this._recivedCoins);
@@ -76,7 +86,8 @@ var Main = React.createClass({
           {this.state.myTurn ? <UserInterface/> : null}
         </div>
         <div>
-          {this.state.appear ? <Chellange/> : null}
+          {this.state.appear ? <Chellange action={actionTemp}/> : null}
+          {this.state.chellangeCard ? <ChellangeCard action={actionTemp}/> : null}
         </div>
         <div className="sims">
           <div className="coinsImage">

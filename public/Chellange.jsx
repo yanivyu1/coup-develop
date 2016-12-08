@@ -1,26 +1,27 @@
 var React = require('react');
 
 var Chellange = React.createClass({
-  _block:function(){
-    console.log("block");
-    socket.emit('block');
+  getInitialState: function() {
+    return {
+      action:null
+    };
+  },
+  componentWillMount: function() {
     this.setState({
-      appear:false
+      action:this.props.action
     });
+  },
+  _block:function(){
+    console.log("block "+this.state.action);
+    socket.emit('block',this.state.action);
   },
   _chellangeAction:function(){
-    console.log("chellange");
-    socket.emit('chellangeAction');
-    this.setState({
-      appear:false
-    });
+    console.log("chellange "+this.state.action);
+    socket.emit('chellangeAction',this.state.action);
   },
   _allow:function(){
-    console.log("allow");
-    socket.emit('allow');
-    this.setState({
-      appear:false
-    });
+    console.log("allow "+this.state.action);
+    socket.emit('allow',this.state.action);
   },
   render:function(){
     return(
