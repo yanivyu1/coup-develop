@@ -7,12 +7,14 @@ var chellangeCard = React.createClass({
     };
   },
   componentWillMount: function() {
+    console.log(this.props.action);
     this.setState({
-      card:this.props.action
+      action:this.props.action
     });
+    console.log(this.state.action);
   },
   _chellange:function(){
-    socket.emit('chellange',this.state.action);
+    socket.emit('chellangeAction',this.state.action);
   },
   _accept:function(){
     socket.emit('accept',this.state.action);

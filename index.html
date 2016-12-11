@@ -17,7 +17,7 @@
   .coins {
     position: relative;
     left: 15px;
-    z-index: -1;
+    z-index: 2;
   }
   .coinsImage {
     position: relative;
@@ -32,6 +32,8 @@
     top: 100px;
     left: 150px;
     border: solid 2px black;
+    width: 532px;
+    z-index: 99;
   }
   .UIButton {
     margin: 2px;
@@ -76,6 +78,7 @@
     width:100px;
     height: 300px;
     z-index: 3;
+    background-color: white;
   }
   .roomInterface {
     position: relative;
@@ -102,10 +105,16 @@
     left: 400px;
     top: -100px;
     border: 2px solid black;
-    width: 270px;
+    width: 161px;
+  }
+  .cards {
+    position: relative;
+    top: 50px;
+    left: 10px;
   }
   #main{
     background-image: url("/public/Light-wood-kitchen-table-4.jpg");
+    height: 800px;
   }
 </style>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>

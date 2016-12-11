@@ -6,6 +6,9 @@ var Cards = React.createClass({
       cards:[{name:"card-back",shown:false,style:{opacity:1}},{name:"card-back",shown:false,style:{opacity:1}}]
     };
   },
+  componentDidMount: function() {
+
+  },
   componentWillMount: function() {
     this.setState({
       cards: [{name:this.props.cards.card1,shown:false,style:{opacity:1}},{name:this.props.cards.card2,shown:false,style:{opacity:1}}]

@@ -12,6 +12,8 @@ var startGame = 0;
 var cards = [2,2,2,2,2];
 var AINames = ["Robert","Patrick","Donna","James","Alex","Gil"];
 var turn = 0;
+var chellangedPlayer;
+var blocked = false;
 io.on('connection',function(socket){
   console.log(socket.id+" is connected");
   socket.on('disconnect',function(){
@@ -20,7 +22,7 @@ io.on('connection',function(socket){
   });
 	socket.on('join',function(name){
 			console.log(name+" has joined");
-			players.push({type:"human",name:name,playerId:socket.id,coins:2,card1:null,card2:null});
+			players.push({type:"human",name:name,playerId:socket.id,coins:2,card1:null,card2:null,hits:0});
 			io.emit('hasJoined',name);
 			socket.emit('joined');
 	});
@@ -82,14 +84,20 @@ io.on('connection',function(socket){
 	socket.on('getIncome',function(){
 		console.log(players[getIndex(socket.id)].name+" took income");
 		players[getIndex(socket.id)].coins++;
-		turn = (turn + 1)%players.length;
 		console.log(players[getIndex(socket.id)]);
 		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+		while(players[turn].hits<2){
+			turn = (turn + 1)%players.length;
+			break;
+		}
+		io.to(players[turn].playerId).broadcast.emit('turnEnd');
 		io.to(players[turn].playerId).emit('playTurn');
 	});
 	socket.on('getForeignAid',function(){
 		console.log("foreign aid");
-		socket.broadcast.emit('Chellange',"foreign aid");
+		chellangedPlayer = getIndex(socket.id);
+		console.log(chellangedPlayer);
+		socket.broadcast.emit('chellange',"foreign aid");
 	});
 	socket.on('allow',function(){
 		players[turn].coins+=2;
@@ -100,14 +108,60 @@ io.on('connection',function(socket){
 	});
 	socket.on('block',function(action){
 		console.log("block "+action);
+		blocked = true;
+		chellangedPlayer = getIndex(socket.id);
+		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellangeCard',action);
 	});
 	socket.on('chellangeAction',function(action){
-		console.log("chellangeAction "+action);
+		console.log(action+" chellanged");
+		switch(action){
+			case "foreign aid":
+			console.log(blocked);
+				if(blocked && (players[chellangedPlayer].card1 != "Duke" && players[chellangedPlayer].card2 != "Duke")){
+					console.log("player "+chellangedPlayer+" is busted");
+					players[chellangedPlayer].emit('busted');
+				}
+				else{
+					players[getIndex(socket.id)].coins+=2;
+					console.log(players[getIndex(socket.id)]);
+					socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+					while(players[turn].hits<2){
+						turn = (turn + 1)%players.length;
+						break;
+					}
+					socket.emit('turnEnd');
+					io.to(players[turn].playerId).emit('playTurn');
+				}
+				break;
+			case "tax":
+				if(blocked && (players[chellangedPlayer].card1 != "Duke" || players[chellangedPlayer].card2 != "Duke")){
+					console.log("player "+chellangedPlayer+" is busted");
+					players[chellangedPlayer].emit('busted');
+				}
+				if(!blocked && (players[chellangedPlayer].card1 != "Duke" || players[chellangedPlayer].card2 != "Duke")){
+					console.log("player "+chellangedPlayer+" is busted");
+					players[chellangedPlayer].emit('busted');
+				}
+				else{
+					players[getIndex(socket.id)].coins+=3;
+					console.log(players[getIndex(socket.id)]);
+					socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+					while(players[turn].hits<2){
+						turn = (turn + 1)%players.length;
+						break;
+					}
+					io.to(players[turn].playerId).broadcast.emit('turnEnd');
+					io.to(players[turn].playerId).emit('playTurn');
+				}
+				break;
+		}
 	});
 });
 server.listen(8080);
+function passTurn(){
 
+}
 function getIndex(id){
 	for(var i=0;i<players.length;i++){
 		if(players[i].playerId === id){

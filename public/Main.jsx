@@ -5,7 +5,7 @@ import Chellange from "Chellange";
 import Join from "Join";
 import RoomInterface from "RoomInterface";
 import Cards from "Cards";
-import chellangeCard from "ChellangeCard";
+import ChellangeCard from "ChellangeCard";
 var actionTemp;
 var hand;
 var Main = React.createClass({
@@ -18,6 +18,7 @@ var Main = React.createClass({
       chellangeCard:false,
       addAiPlayer:true,
       play:false,
+      busted:false,
       coins:2
     };
   },
@@ -31,15 +32,17 @@ var Main = React.createClass({
     });
   },
   _chellange:function(action){
-    console.log("chellange "+action);
     actionTemp = action;
+    console.log("chellange "+actionTemp);
     this.setState({
       appear:true
     });
   },
   _chellangeAction:function(action){
+    actionTemp = action;
+    console.log("chellange "+actionTemp);
     this.setState({
-      chellangeCard:true 
+      chellangeCard:true
     });
   },
   _joined:function(){
@@ -63,13 +66,29 @@ var Main = React.createClass({
       myTurn:false
     });
   },
+  _busted:function(){
+    this.setState({
+      busted:true,
+      appear:false
+    });
+  },
+  _endTurn:function(){
+    this.setState({
+      appear:false,
+      chellangeCard:false,
+      myTurn:false,
+      busted:false
+    });
+  },
   componentDidMount: function() {
+    socket.on('busted',this._busted);
     socket.on('playTurn',this._play);
-    socket.on('Chellange',this._chellange);
+    socket.on('chellange',this._chellange);
     socket.on('chellangeCard',this._chellangeAction);
     socket.on('joined',this._joined);
     socket.on('begin',this._start);
     socket.on('recivedCoins',this._recivedCoins);
+    socket.on('turnEnd',this._endTurn);
   },
   render:function(){
     return(
@@ -88,6 +107,7 @@ var Main = React.createClass({
         <div>
           {this.state.appear ? <Chellange action={actionTemp}/> : null}
           {this.state.chellangeCard ? <ChellangeCard action={actionTemp}/> : null}
+          {this.state.busted ? <Busted/> : null}
         </div>
         <div className="sims">
           <div className="coinsImage">
@@ -118,6 +138,13 @@ var Start = React.createClass({
       <div className="start">
         <button className="startButton" onClick={this.startGame}>START</button>
       </div>
+    );
+  }
+});
+var Busted = React.createClass({
+  render:function(){
+    return(
+      <h1 className="bustedTitle">Choose a Card</h1>
     );
   }
 });

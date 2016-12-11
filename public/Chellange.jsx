@@ -7,6 +7,7 @@ var Chellange = React.createClass({
     };
   },
   componentWillMount: function() {
+    console.log(this.props.action);
     this.setState({
       action:this.props.action
     });
