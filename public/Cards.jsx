@@ -3,7 +3,7 @@ var click = false;
 var Cards = React.createClass({
   getInitialState: function() {
     return {
-      cards:[{name:"card-back",shown:false,style:{opacity:1}},{name:"card-back",shown:false,style:{opacity:1}}]
+      cards:[{name:"Card Back",shown:false,style:{opacity:1}},{name:"Card Back",shown:false,style:{opacity:1}}]
     };
   },
   componentDidMount: function() {
