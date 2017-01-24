@@ -90,7 +90,8 @@
 	      addAiPlayer: true,
 	      play: false,
 	      busted: false,
-	      coins: 2
+	      coins: 2,
+	      action: null
 	    };
 	  },
 	  _play: function _play() {
@@ -99,21 +100,26 @@
 	      myTurn: true,
 	      join: false,
 	      addAiPlayer: false,
-	      appear: false
+	      appear: false,
+	      chellangeCard: false,
+	      chellange: false,
+	      action: null
 	    });
 	  },
 	  _chellange: function _chellange(action) {
 	    actionTemp = action;
 	    console.log("chellange " + actionTemp);
 	    this.setState({
-	      appear: true
+	      appear: true,
+	      action: action
 	    });
 	  },
 	  _chellangeAction: function _chellangeAction(action) {
 	    actionTemp = action;
 	    console.log("chellange " + actionTemp);
 	    this.setState({
-	      chellangeCard: true
+	      chellangeCard: true,
+	      action: action
 	    });
 	  },
 	  _joined: function _joined() {
@@ -138,17 +144,21 @@
 	    });
 	  },
 	  _busted: function _busted() {
+	    console.log("busted");
 	    this.setState({
 	      busted: true,
 	      appear: false
 	    });
 	  },
 	  _endTurn: function _endTurn() {
+	    console.log("turn ended");
 	    this.setState({
 	      appear: false,
 	      chellangeCard: false,
 	      myTurn: false,
-	      busted: false
+	      busted: false,
+	      chellange: false,
+	      action: null
 	    });
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -189,9 +199,9 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.appear ? React.createElement(_Chellange2.default, { action: actionTemp }) : null,
-	        this.state.chellangeCard ? React.createElement(_ChellangeCard2.default, { action: actionTemp }) : null,
-	        this.state.busted ? React.createElement(Busted, null) : null
+	        this.state.busted ? React.createElement(Busted, null) : null,
+	        this.state.appear ? React.createElement(_Chellange2.default, { action: this.state.action }) : null,
+	        this.state.chellangeCard ? React.createElement(_ChellangeCard2.default, { action: this.state.action }) : null
 	      ),
 	      React.createElement(
 	        'div',
@@ -206,7 +216,7 @@
 	      React.createElement(
 	        'div',
 	        { className: 'cards' },
-	        this.state.play ? React.createElement(_Cards2.default, { cards: hand }) : null
+	        this.state.play ? React.createElement(_Cards2.default, { cards: hand, busted: this.state.busted }) : null
 	      )
 	    );
 	  }
@@ -229,11 +239,11 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'start' },
-	      React.createElement(
+	      this.state.visible ? React.createElement(
 	        'button',
 	        { className: 'startButton', onClick: this.startGame },
 	        'START'
-	      )
+	      ) : null
 	    );
 	  }
 	});
@@ -4654,7 +4664,7 @@
 	        this.state.names.map(function (child) {
 	          return React.createElement(
 	            'h3',
-	            null,
+	            { id: child },
 	            child
 	          );
 	        })
@@ -4684,31 +4694,37 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }]
+	      cards: [{ name: "Card Back", shown: false, style: { opacity: 1 } }, { name: "Card Back", shown: false, style: { opacity: 1 } }],
+	      busted: false
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {},
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
-	      cards: [{ name: this.props.cards.card1, shown: false, style: { opacity: 1 } }, { name: this.props.cards.card2, shown: false, style: { opacity: 1 } }]
+	      cards: [{ name: this.props.cards.card1, shown: false, style: { opacity: 1 } }, { name: this.props.cards.card2, shown: false, style: { opacity: 1 } }],
+	      busted: this.props.busted
 	    });
+	    console.log(this.state.busted);
 	  },
 	  _click: function _click(trg) {
-	    trg.setState({
-	      opacity: 0.5
-	    });
+	    console.log(trg.targetValue);
+	    this.setState({});
 	    socket.emit('showCard', trg.name);
+	    this.setState({
+	      busted: false
+	    });
 	  },
 	  render: function render() {
 	    return React.createElement(
 	      "div",
 	      null,
 	      this.state.cards.map(function (card) {
-	        return React.createElement("img", { onClick: this._click, src: "/public/" + card.name + ".png", alt: card.name, style: card.style });
+	        return React.createElement("img", { onClick: this._click, id: card, disabled: !this.state.busted, src: "/public/" + card.name + ".png", alt: card.name, style: card.style });
 	      }.bind(this))
 	    );
 	  }
 	});
+
 	module.exports = Cards;
 
 /***/ },

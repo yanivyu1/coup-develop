@@ -19,7 +19,8 @@ var Main = React.createClass({
       addAiPlayer:true,
       play:false,
       busted:false,
-      coins:2
+      coins:2,
+      action:null
     };
   },
   _play:function(){
@@ -28,21 +29,26 @@ var Main = React.createClass({
       myTurn:true,
       join:false,
       addAiPlayer:false,
-      appear:false
+      appear:false,
+      chellangeCard:false,
+      chellange:false,
+      action:null
     });
   },
   _chellange:function(action){
     actionTemp = action;
     console.log("chellange "+actionTemp);
     this.setState({
-      appear:true
+      appear:true,
+      action:action
     });
   },
   _chellangeAction:function(action){
     actionTemp = action;
     console.log("chellange "+actionTemp);
     this.setState({
-      chellangeCard:true
+      chellangeCard:true,
+      action:action
     });
   },
   _joined:function(){
@@ -67,17 +73,21 @@ var Main = React.createClass({
     });
   },
   _busted:function(){
+    console.log("busted");
     this.setState({
       busted:true,
       appear:false
     });
   },
   _endTurn:function(){
+    console.log("turn ended");
     this.setState({
       appear:false,
       chellangeCard:false,
       myTurn:false,
-      busted:false
+      busted:false,
+      chellange:false,
+      action:null
     });
   },
   componentDidMount: function() {
@@ -105,9 +115,9 @@ var Main = React.createClass({
           {this.state.myTurn ? <UserInterface/> : null}
         </div>
         <div>
-          {this.state.appear ? <Chellange action={actionTemp}/> : null}
-          {this.state.chellangeCard ? <ChellangeCard action={actionTemp}/> : null}
           {this.state.busted ? <Busted/> : null}
+          {this.state.appear ? <Chellange action={this.state.action}/> : null}
+          {this.state.chellangeCard ? <ChellangeCard action={this.state.action}/> : null}
         </div>
         <div className="sims">
           <div className="coinsImage">
@@ -115,7 +125,7 @@ var Main = React.createClass({
           <h1 className="coins">{this.state.coins}</h1>
         </div>
         <div className="cards">
-          {this.state.play ? <Cards cards={hand}/> : null}
+          {this.state.play ? <Cards cards={hand} busted={this.state.busted}/> : null}
         </div>
       </div>
     );
@@ -136,7 +146,7 @@ var Start = React.createClass({
   render:function(){
     return(
       <div className="start">
-        <button className="startButton" onClick={this.startGame}>START</button>
+        {this.state.visible ? <button className="startButton" onClick={this.startGame}>START</button> : null}
       </div>
     );
   }

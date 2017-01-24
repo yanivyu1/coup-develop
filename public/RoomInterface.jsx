@@ -32,7 +32,7 @@ var RoomInterface = React.createClass({
         <div>
           <div className="nameSpace">
             {this.state.names.map(function(child){
-              return(<h3>{child}</h3>)
+              return(<h3 id={child}>{child}</h3>)
             })}
           </div>
           <br/>{this.props.visible ? <button className="aiButton" disabled={this.state.names.length >= 5} onClick={this._addAiPlayer}>ADD AI PLAYER</button> : null}
