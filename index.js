@@ -133,8 +133,7 @@ io.on('connection',function(socket){
 				}
 				else{
 					socket.emit('busted');
-					players[turn].coins+=2;
-					console.log(players[chellangedPlayer]);
+ 					console.log(players[chellangedPlayer]);
 					io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
 				}
 				break;
@@ -150,6 +149,15 @@ io.on('connection',function(socket){
 					}
 					break;
 		}
+	});
+	socket.on('showCard',function(card){
+		console.log(players[getIndex(socket.id)].name+" "+card+" revelead");
+		io.emit('turnEnd');
+		while(players[turn].hits<2){
+			turn = (turn + 1)%players.length;
+			break;
+		}
+		io.to(players[turn].playerId).emit('playTurn');
 	});
 });
 server.listen(8080);

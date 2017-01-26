@@ -6,8 +6,11 @@ import Join from "Join";
 import RoomInterface from "RoomInterface";
 import Cards from "Cards";
 import ChellangeCard from "ChellangeCard";
+import OtherPlayer from "OtherPlayer";
 var actionTemp;
 var hand;
+var nameTemp = null;
+var coinsTemp = 0;
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -20,7 +23,7 @@ var Main = React.createClass({
       play:false,
       busted:false,
       coins:2,
-      action:null
+      action:null,
     };
   },
   _play:function(){
@@ -104,6 +107,9 @@ var Main = React.createClass({
     return(
       <div>
         <h1 className="title">Welcom to coup treason</h1>
+        <div>
+
+        </div>
         <div className="roomInterface">
           <RoomInterface visible={this.state.addAiPlayer}/>
         </div>
