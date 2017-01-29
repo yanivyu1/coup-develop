@@ -9,15 +9,13 @@ var RoomInterface = React.createClass({
       };
     },
     componentDidMount: function() {
-      socket.on('hasJoined',this._joined);
       socket.on('jasLeft',this._left);
     },
-    _joined:function(name){
-      namesTemp.push(name);
+    componentWillMount: function() {
+      namesTemp.push(this.props.name);
       this.setState({
         names:namesTemp
       });
-      console.log(this.state.names);
     },
     _left:function(name){
       var ind = names.indexOf(name);

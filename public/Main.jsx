@@ -9,8 +9,8 @@ import ChellangeCard from "ChellangeCard";
 import OtherPlayer from "OtherPlayer";
 var actionTemp;
 var hand;
-var nameTemp = null;
-var coinsTemp = 0;
+var playersTemp = [];
+var namesTemp = [];
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -24,6 +24,8 @@ var Main = React.createClass({
       busted:false,
       coins:2,
       action:null,
+      otherPlayers:[],
+      names:[]
     };
   },
   _play:function(){
@@ -54,11 +56,14 @@ var Main = React.createClass({
       action:action
     });
   },
-  _joined:function(){
+  _joined:function(player){
+    playersTemp.push(player)
     this.setState({
       join:false,
-      start:true
+      start:true,
+      otherPlayers:playersTemp
     });
+    console.log(this.state.otherPlayers);
   },
   _start:function(player){
     hand = player;
@@ -93,6 +98,13 @@ var Main = React.createClass({
       action:null
     });
   },
+  _hasJoined:function(player){
+    namesTemp.push(player.name);
+    this.setState({
+      names:namesTemp
+    });
+    console.log(this.state.names);
+  },
   componentDidMount: function() {
     socket.on('busted',this._busted);
     socket.on('playTurn',this._play);
@@ -102,6 +114,7 @@ var Main = React.createClass({
     socket.on('begin',this._start);
     socket.on('recivedCoins',this._recivedCoins);
     socket.on('turnEnd',this._endTurn);
+    socket.on('hasJoined',this._hasJoined);
   },
   render:function(){
     return(
@@ -111,7 +124,14 @@ var Main = React.createClass({
 
         </div>
         <div className="roomInterface">
-          <RoomInterface visible={this.state.addAiPlayer}/>
+          <RoomInterface names={this.state.names} visible={this.state.addAiPlayer}/>
+        </div>
+        <div className="otherPlayers">
+          {this.state.otherPlayers.map(function(player){
+            return(
+              <OtherPlayer name={player.name} sims={player.coins}/>
+            )
+          })}
         </div>
         <div>
           {this.state.join ? <Join/> : null}
