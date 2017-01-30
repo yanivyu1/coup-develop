@@ -56,14 +56,14 @@ var Main = React.createClass({
       action:action
     });
   },
-  _joined:function(player){
-    playersTemp.push(player)
+  _joined:function(name){
+    namesTemp.push(name);
     this.setState({
       join:false,
       start:true,
-      otherPlayers:playersTemp
+      names:namesTemp
     });
-    console.log(this.state.otherPlayers);
+    console.log(this.state.names);
   },
   _start:function(player){
     hand = player;
@@ -99,11 +99,11 @@ var Main = React.createClass({
     });
   },
   _hasJoined:function(player){
-    namesTemp.push(player.name);
+    playersTemp.push(player)
     this.setState({
-      names:namesTemp
+      otherPlayers:playersTemp
     });
-    console.log(this.state.names);
+    console.log(this.state.otherPlayers);
   },
   componentDidMount: function() {
     socket.on('busted',this._busted);
@@ -127,9 +127,9 @@ var Main = React.createClass({
           <RoomInterface names={this.state.names} visible={this.state.addAiPlayer}/>
         </div>
         <div className="otherPlayers">
-          {this.state.otherPlayers.map(function(player){
+          {this.state.otherPlayers.map(function(player,i){
             return(
-              <OtherPlayer name={player.name} sims={player.coins}/>
+              <OtherPlayer className={"otherPlayer"+i} name={player.name} sims={player.coins}/>
             )
           })}
         </div>

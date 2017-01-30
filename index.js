@@ -23,8 +23,8 @@ io.on('connection',function(socket){
 	socket.on('join',function(name){
 			console.log(name+" has joined");
 			players.push({type:"human",name:name,playerId:socket.id,coins:2,card1:null,card2:null,hits:0});
-			io.emit('hasJoined',players[getIndex(socket.id)]);
-			socket.emit('joined',players[getIndex(socket.id)]);
+			socket.broadcast.emit('hasJoined',players[getIndex(socket.id)]);
+			socket.emit('joined',players[getIndex(socket.id)].name);
 	});
   socket.on('addAiPlayer',function(){
 		var nameInd = Math.round(Math.random()*AINames.length);

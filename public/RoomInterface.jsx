@@ -12,9 +12,9 @@ var RoomInterface = React.createClass({
       socket.on('jasLeft',this._left);
     },
     componentWillMount: function() {
-      namesTemp.push(this.props.name);
+      console.log(this.props.names);
       this.setState({
-        names:namesTemp
+        names:this.props.names
       });
     },
     _left:function(name){

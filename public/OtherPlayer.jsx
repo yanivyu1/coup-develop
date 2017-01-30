@@ -19,9 +19,9 @@ var OtherPlayer = React.createClass({
       <div>
         {this.state.cards.map(function(card){
           return(
-              <img  id={card.name} src={"/public/"+card.name+".png"} alt={card.name} style={card.style}/>
+              <img  id={card.name} src={"/public/"+card.name+".jpg"} alt={card.name} style={card.style}/>
           )
-        })};
+        })}
         <h2>{this.state.name}</h2>
         <h1>{this.state.sims}</h1>
       </div>

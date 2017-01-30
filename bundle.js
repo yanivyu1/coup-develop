@@ -130,14 +130,14 @@
 	      action: action
 	    });
 	  },
-	  _joined: function _joined(player) {
-	    playersTemp.push(player);
+	  _joined: function _joined(name) {
+	    namesTemp.push(name);
 	    this.setState({
 	      join: false,
 	      start: true,
-	      otherPlayers: playersTemp
+	      names: namesTemp
 	    });
-	    console.log(this.state.otherPlayers);
+	    console.log(this.state.names);
 	  },
 	  _start: function _start(player) {
 	    hand = player;
@@ -173,11 +173,11 @@
 	    });
 	  },
 	  _hasJoined: function _hasJoined(player) {
-	    namesTemp.push(player.name);
+	    playersTemp.push(player);
 	    this.setState({
-	      names: namesTemp
+	      otherPlayers: playersTemp
 	    });
-	    console.log(this.state.names);
+	    console.log(this.state.otherPlayers);
 	  },
 	  componentDidMount: function componentDidMount() {
 	    socket.on('busted', this._busted);
@@ -208,8 +208,8 @@
 	      React.createElement(
 	        'div',
 	        { className: 'otherPlayers' },
-	        this.state.otherPlayers.map(function (player) {
-	          return React.createElement(_OtherPlayer2.default, { name: player.name, sims: player.coins });
+	        this.state.otherPlayers.map(function (player, i) {
+	          return React.createElement(_OtherPlayer2.default, { className: "otherPlayer" + i, name: player.name, sims: player.coins });
 	        })
 	      ),
 	      React.createElement(
@@ -4666,9 +4666,9 @@
 	    socket.on('jasLeft', this._left);
 	  },
 	  componentWillMount: function componentWillMount() {
-	    namesTemp.push(this.props.name);
+	    console.log(this.props.names);
 	    this.setState({
-	      names: namesTemp
+	      names: this.props.names
 	    });
 	  },
 	  _left: function _left(name) {
@@ -4719,7 +4719,7 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      cards: [{ name: "Card Back", shown: false, style: { opacity: 1 } }, { name: "Card Back", shown: false, style: { opacity: 1 } }],
+	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
 	      busted: false
 	    };
 	  },
@@ -4822,7 +4822,7 @@
 	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
-	      cards: [{ name: "CardBack", shown: false, style: { opacity: 1 } }, { name: "CardBack", shown: false, style: { opacity: 1 } }],
+	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
 	      name: this.props.name,
 	      sims: this.props.sims
 	    });
@@ -4834,7 +4834,6 @@
 	      this.state.cards.map(function (card) {
 	        return React.createElement("img", { id: card.name, src: "/public/" + card.name + ".jpg", alt: card.name, style: card.style });
 	      }),
-	      ";",
 	      React.createElement(
 	        "h2",
 	        null,
