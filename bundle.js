@@ -70,7 +70,7 @@
 
 	var _ChellangeCard2 = _interopRequireDefault(_ChellangeCard);
 
-	var _OtherPlayer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"OtherPlayer\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _OtherPlayer = __webpack_require__(40);
 
 	var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
@@ -81,6 +81,8 @@
 
 	var actionTemp;
 	var hand;
+	var playersTemp = [];
+	var namesTemp = [];
 	var Main = React.createClass({
 	  displayName: 'Main',
 
@@ -95,7 +97,9 @@
 	      play: false,
 	      busted: false,
 	      coins: 2,
-	      action: null
+	      action: null,
+	      otherPlayers: [],
+	      names: []
 	    };
 	  },
 	  _play: function _play() {
@@ -126,11 +130,14 @@
 	      action: action
 	    });
 	  },
-	  _joined: function _joined() {
+	  _joined: function _joined(name) {
+	    namesTemp.push(name);
 	    this.setState({
 	      join: false,
-	      start: true
+	      start: true,
+	      names: namesTemp
 	    });
+	    console.log(this.state.names);
 	  },
 	  _start: function _start(player) {
 	    hand = player;
@@ -165,6 +172,13 @@
 	      action: null
 	    });
 	  },
+	  _hasJoined: function _hasJoined(player) {
+	    playersTemp.push(player);
+	    this.setState({
+	      otherPlayers: playersTemp
+	    });
+	    console.log(this.state.otherPlayers);
+	  },
 	  componentDidMount: function componentDidMount() {
 	    socket.on('busted', this._busted);
 	    socket.on('playTurn', this._play);
@@ -174,6 +188,7 @@
 	    socket.on('begin', this._start);
 	    socket.on('recivedCoins', this._recivedCoins);
 	    socket.on('turnEnd', this._endTurn);
+	    socket.on('hasJoined', this._hasJoined);
 	  },
 	  render: function render() {
 	    return React.createElement(
@@ -188,7 +203,14 @@
 	      React.createElement(
 	        'div',
 	        { className: 'roomInterface' },
-	        React.createElement(_RoomInterface2.default, { visible: this.state.addAiPlayer })
+	        React.createElement(_RoomInterface2.default, { names: this.state.names, visible: this.state.addAiPlayer })
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'otherPlayers' },
+	        this.state.otherPlayers.map(function (player, i) {
+	          return React.createElement(_OtherPlayer2.default, { className: "otherPlayer" + i, name: player.name, sims: player.coins });
+	        })
 	      ),
 	      React.createElement(
 	        'div',
@@ -4641,15 +4663,13 @@
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
-	    socket.on('hasJoined', this._joined);
 	    socket.on('jasLeft', this._left);
 	  },
-	  _joined: function _joined(name) {
-	    namesTemp.push(name);
+	  componentWillMount: function componentWillMount() {
+	    console.log(this.props.names);
 	    this.setState({
-	      names: namesTemp
+	      names: this.props.names
 	    });
-	    console.log(this.state.names);
 	  },
 	  _left: function _left(name) {
 	    var ind = names.indexOf(name);
@@ -4699,7 +4719,7 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      cards: [{ name: "Card Back", shown: false, style: { opacity: 1 } }, { name: "Card Back", shown: false, style: { opacity: 1 } }],
+	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
 	      busted: false
 	    };
 	  },
@@ -4784,7 +4804,52 @@
 	module.exports = chellangeCard;
 
 /***/ },
-/* 40 */,
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(2);
+	var OtherPlayer = React.createClass({
+	  displayName: "OtherPlayer",
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      name: null,
+	      cards: [],
+	      sims: 0
+	    };
+	  },
+	  componentWillMount: function componentWillMount() {
+	    this.setState({
+	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
+	      name: this.props.name,
+	      sims: this.props.sims
+	    });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      "div",
+	      null,
+	      this.state.cards.map(function (card) {
+	        return React.createElement("img", { id: card.name, src: "/public/" + card.name + ".jpg", alt: card.name, style: card.style });
+	      }),
+	      React.createElement(
+	        "h2",
+	        null,
+	        this.state.name
+	      ),
+	      React.createElement(
+	        "h1",
+	        null,
+	        this.state.sims
+	      )
+	    );
+	  }
+	});
+	module.exports = OtherPlayer;
+
+/***/ },
 /* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
