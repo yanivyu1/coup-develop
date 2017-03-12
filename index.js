@@ -86,12 +86,11 @@ io.on('connection',function(socket){
 		players[getIndex(socket.id)].coins++;
 		console.log(players[getIndex(socket.id)]);
 		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
-		io.to(players[turn].playerId).broadcast.emit('turnEnd');
+		io.emit('turnEnd');
 		while(players[turn].hits<2){
 			turn = (turn + 1)%players.length;
 			break;
 		}
-
 		io.to(players[turn].playerId).emit('playTurn');
 	});
 	socket.on('getForeignAid',function(){
@@ -99,6 +98,12 @@ io.on('connection',function(socket){
 		chellangedPlayer = getIndex(socket.id);
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellange',"foreign aid");
+	});
+	socket.on('getTax',function(){
+		console.log("tax");
+		chellangedPlayer = getIndex(socket.id);
+		console.log(chellangedPlayer);
+		socket.broadcast.emit('chellange',"tax");
 	});
 	socket.on('allow',function(action){
 		switch(action){
@@ -113,7 +118,7 @@ io.on('connection',function(socket){
 				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
 				break;
 		}
-
+		io.emit('turnEnd');
 		turn = (turn + 1)%players.length;
 		io.to(players[turn].playerId).emit('playTurn');
 	});
@@ -129,29 +134,29 @@ io.on('connection',function(socket){
 		switch(action){
 			case "foreign aid":
 				if(players[chellangedPlayer].card1 != "Duke" && players[chellangedPlayer].card2 != "Duke"){
+					players[chellangedPlayer].hits++;
+					io.to(players[chellangedPlayer].playerId).emit('busted');
+				}
+				else{
+					players[getIndex(socket.id)].hits++;
+					socket.emit('busted');
+ 					console.log(players[chellangedPlayer]);
+				}
+				break;
+			case "tax":
+				if(blocked && (players[chellangedPlayer].card1 != "Duke" && players[chellangedPlayer].card2 != "Duke")){
 					io.to(players[chellangedPlayer].playerId).emit('busted');
 				}
 				else{
 					socket.emit('busted');
- 					console.log(players[chellangedPlayer]);
-					io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+					console.log(players[chellangedPlayer]);
 				}
 				break;
-				case "tax":
-					if(blocked && (players[chellangedPlayer].card1 != "Duke" && players[chellangedPlayer].card2 != "Duke")){
-						io.to(players[chellangedPlayer].playerId).emit('busted');
-					}
-					else{
-						socket.emit('busted');
-						players[turn].coins+=2;
-						console.log(players[chellangedPlayer]);
-						io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
-					}
-					break;
 		}
 	});
 	socket.on('showCard',function(card){
 		console.log(players[getIndex(socket.id)].name+" "+card+" revelead");
+		socket.broadcast.emit('revealCard',card);
 		io.emit('turnEnd');
 		while(players[turn].hits<2){
 			turn = (turn + 1)%players.length;

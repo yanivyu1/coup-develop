@@ -316,6 +316,10 @@
 	    });
 	    socket.emit('getForeignAid');
 	  },
+	  getTax: function getTax() {
+	    console.log("get tax");
+	    socket.emit('getTax');
+	  },
 	  componentDidMount: function componentDidMount() {},
 	  render: function render() {
 	    return React.createElement(
@@ -4822,9 +4826,22 @@
 	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
-	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
+	      cards: [{ name: "card-back.jpg", shown: false, style: { opacity: 1 } }, { name: "card-back.jpg", shown: false, style: { opacity: 1 } }],
 	      name: this.props.name,
 	      sims: this.props.sims
+	    });
+	  },
+	  componentDidMount: function componentDidMount() {
+	    socket.on('revealCard', this._revealCard);
+	  },
+	  _revealCard: function _revealCard(card) {
+	    if (!this.state.cards[0].shown) {
+	      var cardsTemp = [{ name: card + ".png", shown: true, style: { opacity: 1 } }, { name: "card-back.jpg", shown: false, style: { opacity: 1 } }];
+	    } else {
+	      var cardsTemp = [{ name: "card-back.jpg", shown: false, style: { opacity: 1 } }, { name: card + ".png", shown: true, style: { opacity: 1 } }];
+	    }
+	    this.setState({
+	      cards: cardsTemp
 	    });
 	  },
 	  render: function render() {
@@ -4832,7 +4849,7 @@
 	      "div",
 	      null,
 	      this.state.cards.map(function (card) {
-	        return React.createElement("img", { id: card.name, src: "/public/" + card.name + ".jpg", alt: card.name, style: card.style });
+	        return React.createElement("img", { id: card.name, src: "/public/" + card.name, alt: card.name, style: card.style });
 	      }),
 	      React.createElement(
 	        "h2",

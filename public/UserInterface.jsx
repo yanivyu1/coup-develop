@@ -19,6 +19,10 @@ var UserInterface = React.createClass({
     });
     socket.emit('getForeignAid');
   },
+  getTax:function(){
+    console.log("get tax");
+    socket.emit('getTax');
+  },
   componentDidMount: function() {
 
   },

@@ -9,9 +9,23 @@ var OtherPlayer = React.createClass({
   },
   componentWillMount: function() {
     this.setState({
-      cards:[{name:"card-back",shown:false,style:{opacity:1}},{name:"card-back",shown:false,style:{opacity:1}}],
+      cards:[{name:"card-back.jpg",shown:false,style:{opacity:1}},{name:"card-back.jpg",shown:false,style:{opacity:1}}],
       name:this.props.name,
       sims:this.props.sims
+    });
+  },
+  componentDidMount: function() {
+    socket.on('revealCard',this._revealCard);
+  },
+  _revealCard:function(card){
+    if(!this.state.cards[0].shown){
+      var cardsTemp = [{name:card+".png",shown:true,style:{opacity:1}},{name:"card-back.jpg",shown:false,style:{opacity:1}}];
+    }
+    else{
+      var cardsTemp = [{name:"card-back.jpg",shown:false,style:{opacity:1}},{name:card+".png",shown:true,style:{opacity:1}}];
+    }
+    this.setState({
+      cards:cardsTemp
     });
   },
   render:function(){
@@ -19,7 +33,7 @@ var OtherPlayer = React.createClass({
       <div>
         {this.state.cards.map(function(card){
           return(
-              <img  id={card.name} src={"/public/"+card.name+".jpg"} alt={card.name} style={card.style}/>
+              <img  id={card.name} src={"/public/"+card.name} alt={card.name} style={card.style}/>
           )
         })}
         <h2>{this.state.name}</h2>
