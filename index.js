@@ -122,6 +122,11 @@ io.on('connection',function(socket){
 		turn = (turn + 1)%players.length;
 		io.to(players[turn].playerId).emit('playTurn');
 	});
+	socket.on('accept',function(){
+		io.emit('turnEnd');
+		turn = (turn + 1)%players.length;
+		io.to(players[turn].playerId).emit('playTurn');
+	});
 	socket.on('block',function(action){
 		console.log("block "+action);
 		blocked = true;

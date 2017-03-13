@@ -221,7 +221,7 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.myTurn ? React.createElement(_UserInterface2.default, null) : null
+	        this.state.myTurn ? React.createElement(_UserInterface2.default, { play: this.state.myTurn }) : null
 	      ),
 	      React.createElement(
 	        'div',
@@ -300,32 +300,39 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      income: false, foreignAid: false, tax: false, steal: false, exchange: false, assassinate: false, coup: false
+	      income: false, foreignAid: false, tax: false, steal: false, exchange: false, assassinate: false, coup: false, play: false
 	    };
 	  },
 	  getIncome: function getIncome() {
 	    this.setState({
-	      income: true, foreignAid: true, tax: true, steal: true, exchange: true, assassinate: true, coup: true
+	      income: true, foreignAid: true, tax: true, steal: true, exchange: true, assassinate: true, coup: true, play: false
 	    });
 	    socket.emit('getIncome');
 	    console.log("get income");
 	  },
 	  getForeignAid: function getForeignAid() {
 	    this.setState({
-	      income: true, foreignAid: true, tax: true, steal: true, exchange: true, assassinate: true, coup: true
+	      income: true, foreignAid: true, tax: true, steal: true, exchange: true, assassinate: true, coup: true, play: false
 	    });
 	    socket.emit('getForeignAid');
 	  },
 	  getTax: function getTax() {
 	    console.log("get tax");
 	    socket.emit('getTax');
+	    this.setState({
+	      play: false
+	    });
 	  },
-	  componentDidMount: function componentDidMount() {},
+	  componentWillMount: function componentWillMount() {
+	    this.setState({
+	      play: true
+	    });
+	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { className: 'userInterface' },
-	      React.createElement(
+	      this.state.play ? React.createElement(
 	        'div',
 	        { className: 'actions' },
 	        React.createElement(
@@ -363,7 +370,7 @@
 	          { className: 'UIButton', disabled: this.state.coup, onClick: this.coup },
 	          'Coup'
 	        )
-	      )
+	      ) : null
 	    );
 	  }
 	});
@@ -4559,46 +4566,59 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      action: null
+	      action: null, play: false
 	    };
 	  },
 	  componentWillMount: function componentWillMount() {
 	    console.log(this.props.action);
 	    this.setState({
-	      action: this.props.action
+	      action: this.props.action, play: true
 	    });
 	  },
 	  _block: function _block() {
 	    console.log("block " + this.state.action);
 	    socket.emit('block', this.state.action);
+	    this.setState({
+	      play: false
+	    });
 	  },
 	  _chellangeAction: function _chellangeAction() {
 	    console.log("chellange " + this.state.action);
 	    socket.emit('chellangeAction', this.state.action);
+	    this.setState({
+	      play: false
+	    });
 	  },
 	  _allow: function _allow() {
 	    console.log("allow " + this.state.action);
 	    socket.emit('allow', this.state.action);
+	    this.setState({
+	      play: false
+	    });
 	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
-	      { className: 'chellange' },
-	      React.createElement(
-	        'button',
-	        { className: 'UIButton', onClick: this._block },
-	        'BLOCK'
-	      ),
-	      React.createElement(
-	        'button',
-	        { className: 'UIButton', onClick: this._chellangeAction },
-	        'CHELLANGE'
-	      ),
-	      React.createElement(
-	        'button',
-	        { className: 'UIButton', onClick: this._allow },
-	        'ALLOW'
-	      )
+	      null,
+	      this.state.play ? React.createElement(
+	        'div',
+	        { className: 'chellange' },
+	        React.createElement(
+	          'button',
+	          { className: 'UIButton', onClick: this._block },
+	          'BLOCK'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'UIButton', onClick: this._chellangeAction },
+	          'CHELLANGE'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'UIButton', onClick: this._allow },
+	          'ALLOW'
+	        )
+	      ) : null
 	    );
 	  }
 	});
@@ -4772,36 +4792,46 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      action: null
+	      action: null, play: false
 	    };
 	  },
 	  componentWillMount: function componentWillMount() {
 	    console.log(this.props.action);
 	    this.setState({
-	      action: this.props.action
+	      action: this.props.action, play: true
 	    });
 	    console.log(this.state.action);
 	  },
 	  _chellange: function _chellange() {
 	    socket.emit('chellangeAction', this.state.action);
+	    this.setState({
+	      play: false
+	    });
 	  },
 	  _accept: function _accept() {
 	    socket.emit('accept', this.state.action);
+	    this.setState({
+	      play: false
+	    });
 	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
-	      { className: 'chellangeCard' },
-	      React.createElement(
-	        'button',
-	        { onClick: this._chellange, className: 'UIButton' },
-	        'Chellange'
-	      ),
-	      React.createElement(
-	        'button',
-	        { onClick: this._accept, className: 'UIButton' },
-	        'Accept'
-	      )
+	      null,
+	      this.state.play ? React.createElement(
+	        'div',
+	        { className: 'chellangeCard' },
+	        React.createElement(
+	          'button',
+	          { onClick: this._chellange, className: 'UIButton' },
+	          'Chellange'
+	        ),
+	        React.createElement(
+	          'button',
+	          { onClick: this._accept, className: 'UIButton' },
+	          'Accept'
+	        )
+	      ) : null
 	    );
 	  }
 	});

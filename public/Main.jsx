@@ -138,7 +138,7 @@ var Main = React.createClass({
           {this.state.start ? <Start/> : null}
         </div>
         <div>
-          {this.state.myTurn ? <UserInterface/> : null}
+          {this.state.myTurn ? <UserInterface play={this.state.myTurn}/> : null}
         </div>
         <div>
           {this.state.busted ? <Busted/> : null}
