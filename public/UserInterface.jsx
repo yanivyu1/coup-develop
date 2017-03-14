@@ -26,6 +26,13 @@ var UserInterface = React.createClass({
       play:false
     });
   },
+  exchange:function(){
+    console.log("exchange");
+    socket.emit('exchange');
+    this.setState({
+      play:false
+    });
+  },
   componentWillMount: function() {
     this.setState({
       play:true
