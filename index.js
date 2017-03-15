@@ -138,7 +138,7 @@ io.on('connection',function(socket){
 					break;
 					case 4:
 					if(cards[4]>0){
-						card1 === null ? card1 = "Contase" : card2 = "Contase";
+						card1 === null ? card1 = "Contase" : card2 = "Contesa";
 						cards[4]--;
 					}
 					break;
@@ -146,7 +146,6 @@ io.on('connection',function(socket){
 			}
 		}
 		socket.emit('newCards',[card1,card2]);
-	}
 	});
 	socket.on('allow',function(action){
 		switch(action){

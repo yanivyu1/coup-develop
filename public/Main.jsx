@@ -105,6 +105,7 @@ var Main = React.createClass({
     });
     console.log(this.state.otherPlayers);
   },
+
   componentDidMount: function() {
     socket.on('busted',this._busted);
     socket.on('playTurn',this._play);

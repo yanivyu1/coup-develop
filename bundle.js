@@ -179,6 +179,7 @@
 	    });
 	    console.log(this.state.otherPlayers);
 	  },
+
 	  componentDidMount: function componentDidMount() {
 	    socket.on('busted', this._busted);
 	    socket.on('playTurn', this._play);
@@ -319,6 +320,13 @@
 	  getTax: function getTax() {
 	    console.log("get tax");
 	    socket.emit('getTax');
+	    this.setState({
+	      play: false
+	    });
+	  },
+	  exchange: function exchange() {
+	    console.log("exchange");
+	    socket.emit('exchange');
 	    this.setState({
 	      play: false
 	    });
@@ -4744,10 +4752,22 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      cards: [{ name: "card-back", shown: false, style: { opacity: 1 } }, { name: "card-back", shown: false, style: { opacity: 1 } }],
-	      busted: false
+	      busted: false,
+	      exchange: false
 	    };
 	  },
-	  componentDidMount: function componentDidMount() {},
+	  componentDidMount: function componentDidMount() {
+	    socket.on('newCards', this._exchangeCards);
+	  },
+	  _exchangeCards: function _exchangeCards(cards) {
+	    var cardsTemp = this.state.cards;
+	    cardsTemp.push({ name: cards[0], shown: false, style: { opacity: 1 } });
+	    cardsTemp.push({ name: cards[1], shown: false, style: { opacity: 1 } });
+	    this.setState({
+	      cards: cardsTemp,
+	      exchange: true
+	    });
+	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
 	      cards: [{ name: this.props.cards.card1, shown: false, style: { opacity: 1 } }, { name: this.props.cards.card2, shown: false, style: { opacity: 1 } }],
@@ -4772,11 +4792,38 @@
 	      null,
 	      this.state.cards.map(function (card) {
 	        return React.createElement("img", { onClick: this._click, id: card, disabled: this.state.busted, src: "/public/" + card.name + ".png", alt: card.name, style: card.style });
+	      }.bind(this)),
+	      React.createElement(
+	        "div",
+	        null,
+	        this.state.exchange ? React.createElement(ExchangeCards, { cards: this.state.cards }) : null
+	      )
+	    );
+	  }
+	});
+	var ExchangeCards = React.createClass({
+	  displayName: "ExchangeCards",
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      cards: []
+	    };
+	  },
+	  componentWillMount: function componentWillMount() {
+	    this.setState({
+	      cards: this.props.cards
+	    });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      "div",
+	      null,
+	      this.state.cards.map(function (card) {
+	        return React.createElement("img", { onClick: this._click, id: card, disabled: this.state.busted, src: "/public/" + card.name + ".png", alt: card.name, style: card.style });
 	      }.bind(this))
 	    );
 	  }
 	});
-
 	module.exports = Cards;
 
 /***/ },

@@ -4,11 +4,21 @@ var Cards = React.createClass({
   getInitialState: function() {
     return {
       cards:[{name:"card-back",shown:false,style:{opacity:1}},{name:"card-back",shown:false,style:{opacity:1}}],
-      busted:false
+      busted:false,
+      exchange:false
     };
   },
   componentDidMount: function() {
-
+    socket.on('newCards',this._exchangeCards);
+  },
+  _exchangeCards:function(cards){
+    var cardsTemp = this.state.cards;
+    cardsTemp.push({name:cards[0],shown:false,style:{opacity:1}});
+    cardsTemp.push({name:cards[1],shown:false,style:{opacity:1}});
+    this.setState({
+      cards:cardsTemp,
+      exchange:true
+    });
   },
   componentWillMount: function() {
     this.setState({
@@ -37,9 +47,34 @@ var Cards = React.createClass({
             <img onClick={this._click} id={card} disabled={this.state.busted} src={"/public/"+card.name+".png"} alt={card.name} style={card.style}/>
           )
         }.bind(this))}
+        <div className="exchangeCards">
+          {this.state.exchange ? <ExchangeCards cards={this.state.cards}/> : null}
+        </div>
       </div>
     );
   }
 });
-
+var ExchangeCards = React.createClass({
+  getInitialState: function() {
+    return {
+      cards:[]
+    };
+  },
+  componentWillMount: function() {
+    this.setState({
+      cards:this.props.cards
+    });
+  },
+  render:function(){
+    return(
+      <div>
+        {this.state.cards.map(function(card){
+          return(
+            <img onClick={this._click} id={card} disabled={this.state.busted} src={"/public/"+card.name+".png"} alt={card.name} style={card.style}/>
+          )
+        }.bind(this))}
+      </div>
+    );
+  }
+});
 module.exports = Cards;
