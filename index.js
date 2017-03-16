@@ -69,7 +69,7 @@ io.on('connection',function(socket){
             break;
             case 4:
             if(cards[4]>0){
-              players[i].card1 === null ? players[i].card1 = "Contase" : players[i].card2 = "Contase";
+              players[i].card1 === null ? players[i].card1 = "Contesa" : players[i].card2 = "Contesa";
               cards[4]--;
             }
             break;
@@ -106,46 +106,9 @@ io.on('connection',function(socket){
 		socket.broadcast.emit('chellange',"tax");
 	});
 	socket.on('exchange',function(){
-		var card1 = null;
-		var card2 = null;
-		for(var j=0;j<2;j++){
-			while(card2 === null){
-				var num = Math.floor(Math.random()*5);
-				switch(num){
-					case 0:
-					if(cards[0]>0){
-						card1 === null ? card1 = "Duke" : card2 = "Duke";
-						cards[0]--;
-					}
-					break;
-					case 1:
-					if(cards[1]>0){
-						card1 === null ? card1 = "Ambessador" : card2 = "Ambessador";
-						cards[1]--;
-					}
-					break;
-					case 2:
-					if(cards[2]>0){
-						card1 === null ? card1 = "Captain" : card2 = "Captain";
-						cards[2]--;
-					}
-					break;
-					case 3:
-					if(cards[3]>0){
-						card1 === null ? card1 = "Assassin" : card2 = "Assassin";
-						cards[3]--;
-					}
-					break;
-					case 4:
-					if(cards[4]>0){
-						card1 === null ? card1 = "Contase" : card2 = "Contesa";
-						cards[4]--;
-					}
-					break;
-				}
-			}
-		}
-		socket.emit('newCards',[card1,card2]);
+		chellangedPlayer = getIndex(socket.id);
+		console.log(chellangedPlayer);
+		socket.broadcast.emit('chellange',"exchange");
 	});
 	socket.on('allow',function(action){
 		switch(action){
@@ -158,6 +121,49 @@ io.on('connection',function(socket){
 				players[turn].coins+=3;
 				console.log(players[getIndex(socket.id)]);
 				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				break;
+				case "exchange":
+				var card1 = null;
+				var card2 = null;
+				for(var j=0;j<2;j++){
+					while(card2 === null){
+						var num = Math.floor(Math.random()*5);
+						switch(num){
+							case 0:
+							if(cards[0]>0){
+								card1 === null ? card1 = "Duke" : card2 = "Duke";
+								cards[0]--;
+							}
+							break;
+							case 1:
+							if(cards[1]>0){
+								card1 === null ? card1 = "Ambessador" : card2 = "Ambessador";
+								cards[1]--;
+							}
+							break;
+							case 2:
+							if(cards[2]>0){
+								card1 === null ? card1 = "Captain" : card2 = "Captain";
+								cards[2]--;
+							}
+							break;
+							case 3:
+							if(cards[3]>0){
+								card1 === null ? card1 = "Assassin" : card2 = "Assassin";
+								cards[3]--;
+							}
+							break;
+							case 4:
+							if(cards[4]>0){
+								card1 === null ? card1 = "Contesa" : card2 = "Contesa";
+								cards[4]--;
+							}
+							break;
+						}
+					}
+				}
+				console.log(card1 +","+card2);
+				io.to(players[chellangedPlayer].playerId).emit('newCards',[players[chellangedPlayer].card1,players[chellangedPlayer].card2,card1,card2]);
 				break;
 		}
 		io.emit('turnEnd');
@@ -199,6 +205,17 @@ io.on('connection',function(socket){
 					console.log(players[chellangedPlayer]);
 				}
 				break;
+			case "exchange":
+			if(players[chellangedPlayer].card1 != "Ambessador" && players[chellangedPlayer].card2 != "Ambessador"){
+				players[chellangedPlayer].hits++;
+				io.to(players[chellangedPlayer].playerId).emit('busted');
+			}
+			else{
+				players[getIndex(socket.id)].hits++;
+				socket.emit('busted');
+				console.log(players[chellangedPlayer]);
+			}
+			break;
 		}
 	});
 	socket.on('showCard',function(card){

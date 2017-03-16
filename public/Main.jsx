@@ -7,10 +7,12 @@ import RoomInterface from "RoomInterface";
 import Cards from "Cards";
 import ChellangeCard from "ChellangeCard";
 import OtherPlayer from "OtherPlayer";
+import ExchangeCards from "ExchangeCards";
 var actionTemp;
 var hand;
 var playersTemp = [];
 var namesTemp = [];
+var cardsTemp = [];
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -25,7 +27,8 @@ var Main = React.createClass({
       coins:2,
       action:null,
       otherPlayers:[],
-      names:[]
+      names:[],
+      exchange:false
     };
   },
   _play:function(){
@@ -105,7 +108,12 @@ var Main = React.createClass({
     });
     console.log(this.state.otherPlayers);
   },
-
+  _exchangeCards:function(cards){
+    cardsTemp = cards;
+    this.setState({
+      exchange:true
+    });
+  },
   componentDidMount: function() {
     socket.on('busted',this._busted);
     socket.on('playTurn',this._play);
@@ -116,6 +124,7 @@ var Main = React.createClass({
     socket.on('recivedCoins',this._recivedCoins);
     socket.on('turnEnd',this._endTurn);
     socket.on('hasJoined',this._hasJoined);
+    socket.on('newCards',this._exchangeCards);
   },
   render:function(){
     return(
@@ -142,6 +151,7 @@ var Main = React.createClass({
           {this.state.myTurn ? <UserInterface play={this.state.myTurn}/> : null}
         </div>
         <div>
+          {this.state.exchange ? <ExchangeCards cards={cardsTemp}/> : null}
           {this.state.busted ? <Busted/> : null}
           {this.state.appear ? <Chellange action={this.state.action}/> : null}
           {this.state.chellangeCard ? <ChellangeCard action={this.state.action}/> : null}
