@@ -28,7 +28,8 @@ var Main = React.createClass({
       action:null,
       otherPlayers:[],
       names:[],
-      exchange:false
+      exchange:false,
+      player:[]
     };
   },
   _play:function(){
@@ -74,7 +75,8 @@ var Main = React.createClass({
     this.setState({
       start:false,
       addAiPlayer:false,
-      play:true
+      play:true,
+      player:player
     });
   },
   _recivedCoins:function(num){
@@ -114,7 +116,15 @@ var Main = React.createClass({
       exchange:true
     });
   },
+  _swiped:function(player){
+    hand = player;
+    this.setState({
+      play:true,
+      player:player
+    });
+  },
   componentDidMount: function() {
+    socket.on('swiped',this._swiped);
     socket.on('busted',this._busted);
     socket.on('playTurn',this._play);
     socket.on('chellange',this._chellange);
@@ -162,7 +172,7 @@ var Main = React.createClass({
           <h1 className="coins">{this.state.coins}</h1>
         </div>
         <div className="cards">
-          {this.state.play ? <Cards cards={hand} busted={this.state.busted}/> : null}
+          {this.state.play ? <Cards cards={this.state.player} busted={this.state.busted}/> : null}
         </div>
       </div>
     );

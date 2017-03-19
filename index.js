@@ -116,13 +116,19 @@ io.on('connection',function(socket){
 				players[turn].coins+=2;
 				console.log(players[getIndex(socket.id)]);
 				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				io.emit('turnEnd');
+				turn = (turn + 1)%players.length;
+				io.to(players[turn].playerId).emit('playTurn');
 				break;
 			case "tax":
 				players[turn].coins+=3;
 				console.log(players[getIndex(socket.id)]);
 				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				io.emit('turnEnd');
+				turn = (turn + 1)%players.length;
+				io.to(players[turn].playerId).emit('playTurn');
 				break;
-				case "exchange":
+			case "exchange":
 				var card1 = null;
 				var card2 = null;
 				for(var j=0;j<2;j++){
@@ -166,9 +172,6 @@ io.on('connection',function(socket){
 				io.to(players[chellangedPlayer].playerId).emit('newCards',[players[chellangedPlayer].card1,players[chellangedPlayer].card2,card1,card2]);
 				break;
 		}
-		io.emit('turnEnd');
-		turn = (turn + 1)%players.length;
-		io.to(players[turn].playerId).emit('playTurn');
 	});
 	socket.on('accept',function(){
 		io.emit('turnEnd');
@@ -228,6 +231,29 @@ io.on('connection',function(socket){
 		}
 		io.to(players[turn].playerId).emit('playTurn');
 	});
+	socket.on('swipeCards',function(swipeCards){
+		console.log(swipeCards);
+		var swipeCount = 0;
+		for(var i=0;i<swipeCards.length;i++){
+			if(swipeCards[i].swipe == 1){
+				if(swipeCount === 0){
+					players[getIndex(socket.id)].card1 = swipeCards[i].name;
+					swipeCount++;
+				}
+				else {
+					players[getIndex(socket.id)].card2 = swipeCards[i].name;
+				}
+				cards[getName(swipeCards[i].name)]--;
+			}
+			else {
+				cards[getName(swipeCards[i].name)]++;
+			}
+		}
+		socket.emit('swiped',players[getIndex(socket.id)]);
+		io.emit('turnEnd');
+		turn = (turn + 1)%players.length;
+		io.to(players[turn].playerId).emit('playTurn');
+	});
 });
 server.listen(8080);
 function getIndex(id){
@@ -235,5 +261,24 @@ function getIndex(id){
 		if(players[i].playerId === id){
 			return i;
 		}
+	}
+}
+function getName(name){
+	switch (name){
+		case "Duke":
+			return 0;
+			break;
+		case "Ambessador":
+			return 1;
+			break;
+		case "Captain":
+			return 2;
+			break;
+		case "Assassin":
+			return 3;
+			break;
+		case "Contesa":
+			return 4;
+			break;
 	}
 }

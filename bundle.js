@@ -105,7 +105,8 @@
 	      action: null,
 	      otherPlayers: [],
 	      names: [],
-	      exchange: false
+	      exchange: false,
+	      player: []
 	    };
 	  },
 	  _play: function _play() {
@@ -151,7 +152,8 @@
 	    this.setState({
 	      start: false,
 	      addAiPlayer: false,
-	      play: true
+	      play: true,
+	      player: player
 	    });
 	  },
 	  _recivedCoins: function _recivedCoins(num) {
@@ -191,7 +193,15 @@
 	      exchange: true
 	    });
 	  },
+	  _swiped: function _swiped(player) {
+	    hand = player;
+	    this.setState({
+	      play: true,
+	      player: player
+	    });
+	  },
 	  componentDidMount: function componentDidMount() {
+	    socket.on('swiped', this._swiped);
 	    socket.on('busted', this._busted);
 	    socket.on('playTurn', this._play);
 	    socket.on('chellange', this._chellange);
@@ -257,7 +267,7 @@
 	      React.createElement(
 	        'div',
 	        { className: 'cards' },
-	        this.state.play ? React.createElement(_Cards2.default, { cards: hand, busted: this.state.busted }) : null
+	        this.state.play ? React.createElement(_Cards2.default, { cards: this.state.player, busted: this.state.busted }) : null
 	      )
 	    );
 	  }
@@ -4931,11 +4941,13 @@
 /* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var React = __webpack_require__(2);
+	var clickTemp = [0, 0, 0, 0];
+	var countTemp = 0;
 	var ExchangeCards = React.createClass({
-	  displayName: "ExchangeCards",
+	  displayName: 'ExchangeCards',
 
 	  getInitialState: function getInitialState() {
 	    return {
@@ -4955,28 +4967,49 @@
 	  _click: function _click(index, trg) {
 	    console.log(index);
 	    if (this.state.click[index] === 0) {
+	      countTemp++;
+	      clickTemp[index] = 1;
 	      this.setState({
-	        count: this.state.count++
+	        count: countTemp,
+	        click: clickTemp
 	      });
-	      console.log(this.state.count);
-	      trg.target.attributes.style.opacity = 0.5;
+	      console.log(this.state);
+	      // trg.target.attributes.style.opacity = 0.5;
+	    } else {
+	      clickTemp[index] = 0;
+	      countTemp--;
+	      this.setState({
+	        count: countTemp,
+	        click: clickTemp
+	      });
+	      console.log(this.state);
+	      // trg.target.attributes.style.opacity = 1;
 	    }
 	  },
+	  _submit: function _submit() {
+	    socket.emit('swipeCards', [{ "name": this.state.cards[0], "swipe": this.state.click[0] }, { "name": this.state.cards[1], "swipe": this.state.click[1] }, { "name": this.state.cards[2], "swipe": this.state.click[2] }, { "name": this.state.cards[3], "swipe": this.state.click[3] }]);
+	    this.setState({
+	      count: 0,
+	      click: [0, 0, 0, 0],
+	      cards: []
+	    });
+	    clickTemp = [0, 0, 0, 0];
+	    countTemp = 0;
+	  },
 	  render: function render() {
-	    var i = 0;
 	    return React.createElement(
-	      "div",
-	      { className: "exchangeCards" },
+	      'div',
+	      { className: 'exchangeCards' },
 	      this.state.cards.map(function (card, index) {
-	        return React.createElement("img", { onClick: this._click.bind(this, index), id: card, disabled: this.state.busted, src: "/public/" + card + ".png", alt: card });
+	        return React.createElement('img', { onClick: this._click.bind(this, index), id: card, disabled: this.state.busted, src: "/public/" + card + ".png", alt: card });
 	      }.bind(this)),
 	      React.createElement(
-	        "div",
+	        'div',
 	        null,
 	        this.state.count == 2 ? React.createElement(
-	          "button",
-	          { className: "UIButton", onClick: this._submit },
-	          "SUBMIT"
+	          'button',
+	          { className: 'UIButton', onClick: this._submit },
+	          'SUBMIT'
 	        ) : null
 	      )
 	    );
