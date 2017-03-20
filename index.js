@@ -223,6 +223,7 @@ io.on('connection',function(socket){
 	});
 	socket.on('showCard',function(card){
 		console.log(players[getIndex(socket.id)].name+" "+card+" revelead");
+		players[getIndex(socket.id)].card1 === card ? players[getIndex(socket.id)].card1 = null : players[getIndex(socket.id)].card2 = null;
 		socket.broadcast.emit('revealCard',card);
 		io.emit('turnEnd');
 		while(players[turn].hits<2){

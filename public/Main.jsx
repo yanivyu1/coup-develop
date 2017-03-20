@@ -117,11 +117,15 @@ var Main = React.createClass({
     });
   },
   _swiped:function(player){
+    this.setState({
+      play:false 
+    });
     hand = player;
     this.setState({
       play:true,
-      player:player
+      player:hand
     });
+    console.log(this.state);
   },
   componentDidMount: function() {
     socket.on('swiped',this._swiped);

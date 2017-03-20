@@ -194,11 +194,15 @@
 	    });
 	  },
 	  _swiped: function _swiped(player) {
+	    this.setState({
+	      play: false
+	    });
 	    hand = player;
 	    this.setState({
 	      play: true,
-	      player: player
+	      player: hand
 	    });
+	    console.log(this.state);
 	  },
 	  componentDidMount: function componentDidMount() {
 	    socket.on('swiped', this._swiped);
