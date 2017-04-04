@@ -4980,7 +4980,7 @@
 	        count: countTemp,
 	        click: clickTemp
 	      });
-	      console.log(this.state.count);
+	      console.log(this.state);
 	      // trg.target.attributes.style.opacity = 0.5;
 	    } else {
 	      clickTemp[index] = 0;
@@ -5013,7 +5013,7 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.count === this.state.swipeCount - 1 ? React.createElement(
+	        countTemp === this.state.swipeCount - 2 ? React.createElement(
 	          'button',
 	          { className: 'UIButton', onClick: this._submit },
 	          'SUBMIT'

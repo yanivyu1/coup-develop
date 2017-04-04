@@ -60,7 +60,7 @@ var ExchangeCards = React.createClass({
           )
         }.bind(this))}
         <div>
-          {this.state.count === this.state.swipeCount-1 ? <button className="UIButton" onClick={this._submit}>SUBMIT</button> : null}
+          {countTemp === this.state.swipeCount-2 ? <button className="UIButton" onClick={this._submit}>SUBMIT</button> : null}
         </div>
       </div>
     );

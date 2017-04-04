@@ -172,6 +172,7 @@ io.on('connection',function(socket){
 				var swipeCardsTemp = players[chellangedPlayer].cards;
 				swipeCardsTemp.push(swipeCards[0]);
 				swipeCardsTemp.push(swipeCards[1]);
+				console.log(players[chellangedPlayer].cards.length);
 				io.to(players[chellangedPlayer].playerId).emit('newCards',{cards:swipeCardsTemp,length:players[chellangedPlayer].cards.length});
 				break;
 		}
@@ -236,22 +237,18 @@ io.on('connection',function(socket){
 		}
 		io.to(players[turn].playerId).emit('playTurn');
 	});
-	socket.on('swipeCards',function(swipeCards){
-		console.log(swipeCards);
+	socket.on('swipeCards',function(object){
+		console.log(object);
 		var swipeCount = 0;
-		for(var i=0;i<swipeCards.length;i++){
-			if(swipeCards[i].swipe == 1){
-				if(swipeCount === 0){
-					players[getIndex(socket.id)].cards[0] = swipeCards[i].name;
+		players[getIndex(socket.id)].cards = [];
+		for(var i=0;i<object.length;i++){
+			if(object[i].swipe == 1){
+					players[getIndex(socket.id)].cards.push(object[i].name);
 					swipeCount++;
-				}
-				else {
-					players[getIndex(socket.id)].cards[1] = swipeCards[i].name;
-				}
-				cards[getName(swipeCards[i].name)]--;
+					cards[getName(object[i].name)]--;
 			}
 			else {
-				cards[getName(swipeCards[i].name)]++;
+				cards[getName(object[i].name)]++;
 			}
 		}
 		socket.emit('swiped',players[getIndex(socket.id)]);
