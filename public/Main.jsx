@@ -13,6 +13,7 @@ var hand;
 var playersTemp = [];
 var namesTemp = [];
 var cardsTemp = [];
+var cardsLength = 0;
 var Main = React.createClass({
   getInitialState: function() {
     return {
@@ -110,15 +111,16 @@ var Main = React.createClass({
     });
     console.log(this.state.otherPlayers);
   },
-  _exchangeCards:function(cards){
-    cardsTemp = cards;
+  _exchangeCards:function(object){
+    cardsTemp = object.cards;
+    cardsLength = object.length;
     this.setState({
       exchange:true
     });
   },
   _swiped:function(player){
     this.setState({
-      play:false 
+      play:false
     });
     hand = player;
     this.setState({
@@ -165,7 +167,7 @@ var Main = React.createClass({
           {this.state.myTurn ? <UserInterface play={this.state.myTurn}/> : null}
         </div>
         <div>
-          {this.state.exchange ? <ExchangeCards cards={cardsTemp}/> : null}
+          {this.state.exchange ? <ExchangeCards cards={cardsTemp} length={cardsLength}/> : null}
           {this.state.busted ? <Busted/> : null}
           {this.state.appear ? <Chellange action={this.state.action}/> : null}
           {this.state.chellangeCard ? <ChellangeCard action={this.state.action}/> : null}

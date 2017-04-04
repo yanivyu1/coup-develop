@@ -88,6 +88,7 @@
 	var playersTemp = [];
 	var namesTemp = [];
 	var cardsTemp = [];
+	var cardsLength = 0;
 	var Main = React.createClass({
 	  displayName: 'Main',
 
@@ -187,8 +188,9 @@
 	    });
 	    console.log(this.state.otherPlayers);
 	  },
-	  _exchangeCards: function _exchangeCards(cards) {
-	    cardsTemp = cards;
+	  _exchangeCards: function _exchangeCards(object) {
+	    cardsTemp = object.cards;
+	    cardsLength = object.length;
 	    this.setState({
 	      exchange: true
 	    });
@@ -253,7 +255,7 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.exchange ? React.createElement(_ExchangeCards2.default, { cards: cardsTemp }) : null,
+	        this.state.exchange ? React.createElement(_ExchangeCards2.default, { cards: cardsTemp, length: cardsLength }) : null,
 	        this.state.busted ? React.createElement(Busted, null) : null,
 	        this.state.appear ? React.createElement(_Chellange2.default, { action: this.state.action }) : null,
 	        this.state.chellangeCard ? React.createElement(_ChellangeCard2.default, { action: this.state.action }) : null
@@ -4794,7 +4796,7 @@
 	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
-	      cards: [{ name: this.props.cards.card1, shown: false, style: { opacity: 1 } }, { name: this.props.cards.card2, shown: false, style: { opacity: 1 } }],
+	      cards: [{ name: this.props.cards.cards[0], shown: false, style: { opacity: 1 } }, { name: this.props.cards.cards[1], shown: false, style: { opacity: 1 } }],
 	      busted: this.props.busted
 	    });
 	    console.log(this.state.busted);
@@ -4803,11 +4805,11 @@
 	    console.log(trg.target.attributes.getNamedItem('alt').value);
 	    if (this.state.cards[0].name == trg.target.attributes.getNamedItem('alt').value) {
 	      this.setState({
-	        cards: [{ name: this.props.cards.card1, shown: true, style: { opacity: 0.5 } }, { name: this.props.cards.card2, shown: false, style: { opacity: 1 } }]
+	        cards: [{ name: this.props.cards.cards[0], shown: true, style: { opacity: 0.5 } }, { name: this.props.cards.cards[1], shown: false, style: { opacity: 1 } }]
 	      });
 	    } else {
 	      this.setState({
-	        cards: [{ name: this.props.cards.card1, shown: false, style: { opacity: 1 } }, { name: this.props.cards.card2, shown: true, style: { opacity: 0.5 } }]
+	        cards: [{ name: this.props.cards.cards[0], shown: false, style: { opacity: 1 } }, { name: this.props.cards.cards[1], shown: true, style: { opacity: 0.5 } }]
 	      });
 	    }
 	    socket.emit('showCard', trg.target.attributes.getNamedItem('alt').value);
@@ -4958,14 +4960,15 @@
 	      cards: [],
 	      busted: false,
 	      count: 0,
-	      click: [0, 0, 0, 0]
+	      click: [0, 0, 0, 0],
+	      swipeCount: 0
 	    };
 	  },
 	  componentWillMount: function componentWillMount() {
 	    console.log(this.props.cards);
-	    for (var i = 0; i < this.props.cards.length; i++) {}
 	    this.setState({
-	      cards: this.props.cards
+	      cards: this.props.cards,
+	      swipeCount: this.props.length
 	    });
 	  },
 	  _click: function _click(index, trg) {
@@ -4977,7 +4980,7 @@
 	        count: countTemp,
 	        click: clickTemp
 	      });
-	      console.log(this.state);
+	      console.log(this.state.count);
 	      // trg.target.attributes.style.opacity = 0.5;
 	    } else {
 	      clickTemp[index] = 0;
@@ -5010,7 +5013,7 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.count == 2 ? React.createElement(
+	        this.state.count === this.state.swipeCount - 1 ? React.createElement(
 	          'button',
 	          { className: 'UIButton', onClick: this._submit },
 	          'SUBMIT'

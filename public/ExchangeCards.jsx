@@ -7,16 +7,15 @@ var ExchangeCards = React.createClass({
       cards:[],
       busted:false,
       count:0,
-      click:[0,0,0,0]
+      click:[0,0,0,0],
+      swipeCount:0
     };
   },
   componentWillMount: function() {
     console.log(this.props.cards);
-    for(var i=0;i<this.props.cards.length;i++){
-
-    }
     this.setState({
-      cards:this.props.cards
+      cards:this.props.cards,
+      swipeCount:this.props.length
     });
   },
   _click:function(index,trg){
@@ -61,7 +60,7 @@ var ExchangeCards = React.createClass({
           )
         }.bind(this))}
         <div>
-          {this.state.count == 2 ? <button className="UIButton" onClick={this._submit}>SUBMIT</button> : null}
+          {this.state.count === this.state.swipeCount-1 ? <button className="UIButton" onClick={this._submit}>SUBMIT</button> : null}
         </div>
       </div>
     );

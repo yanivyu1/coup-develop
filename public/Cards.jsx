@@ -19,7 +19,7 @@ var Cards = React.createClass({
   },
   componentWillMount: function() {
     this.setState({
-      cards: [{name:this.props.cards.card1,shown:false,style:{opacity:1}},{name:this.props.cards.card2,shown:false,style:{opacity:1}}],
+      cards: [{name:this.props.cards.cards[0],shown:false,style:{opacity:1}},{name:this.props.cards.cards[1],shown:false,style:{opacity:1}}],
       busted:this.props.busted
     });
     console.log(this.state.busted);
@@ -28,12 +28,12 @@ var Cards = React.createClass({
     console.log(trg.target.attributes.getNamedItem('alt').value);
     if(this.state.cards[0].name == trg.target.attributes.getNamedItem('alt').value){
       this.setState({
-        cards:[{name:this.props.cards.card1,shown:true,style:{opacity:0.5}},{name:this.props.cards.card2,shown:false,style:{opacity:1}}]
+        cards:[{name:this.props.cards.cards[0],shown:true,style:{opacity:0.5}},{name:this.props.cards.cards[1],shown:false,style:{opacity:1}}]
       });
     }
     else{
       this.setState({
-        cards:[{name:this.props.cards.card1,shown:false,style:{opacity:1}},{name:this.props.cards.card2,shown:true,style:{opacity:0.5}}]
+        cards:[{name:this.props.cards.cards[0],shown:false,style:{opacity:1}},{name:this.props.cards.cards[1],shown:true,style:{opacity:0.5}}]
       });
     }
     socket.emit('showCard',trg.target.attributes.getNamedItem('alt').value);
