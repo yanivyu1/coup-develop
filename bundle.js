@@ -250,7 +250,7 @@
 	      React.createElement(
 	        'div',
 	        null,
-	        this.state.myTurn ? React.createElement(_UserInterface2.default, { play: this.state.myTurn }) : null
+	        this.state.myTurn ? React.createElement(_UserInterface2.default, { play: this.state.myTurn, coins: this.state.coins }) : null
 	      ),
 	      React.createElement(
 	        'div',
@@ -362,7 +362,9 @@
 	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
-	      play: true
+	      play: true,
+	      assassinate: this.props.coins > 3,
+	      coup: this.props.coins > 7
 	    });
 	  },
 	  render: function render() {
@@ -4910,6 +4912,12 @@
 	  },
 	  componentDidMount: function componentDidMount() {
 	    socket.on('revealCard', this._revealCard);
+	    socket.on('otherRecivedCoins', this._recivedCoins);
+	  },
+	  recivedCoins: function recivedCoins(num) {
+	    this.setState({
+	      sims: num
+	    });
 	  },
 	  _revealCard: function _revealCard(card) {
 	    if (!this.state.cards[0].shown) {

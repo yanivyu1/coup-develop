@@ -164,7 +164,7 @@ var Main = React.createClass({
           {this.state.start ? <Start/> : null}
         </div>
         <div>
-          {this.state.myTurn ? <UserInterface play={this.state.myTurn}/> : null}
+          {this.state.myTurn ? <UserInterface play={this.state.myTurn} coins={this.state.coins}/> : null}
         </div>
         <div>
           {this.state.exchange ? <ExchangeCards cards={cardsTemp} length={cardsLength}/> : null}
