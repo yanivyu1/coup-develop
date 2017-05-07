@@ -43,7 +43,7 @@ var ExchangeCards = React.createClass({
   },
   _submit:function(){
     socket.emit('swipeCards',[{"name":this.state.cards[0],"swipe":this.state.click[0]},{"name":this.state.cards[1],"swipe":this.state.click[1]},{"name":this.state.cards[2],"swipe":this.state.click[2]},{"name":this.state.cards[3],"swipe":this.state.click[3]}]);
-    this.setState({
+    this.setState({ 
       count:0,
       click:[0,0,0,0],
       cards:[]

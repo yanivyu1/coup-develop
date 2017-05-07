@@ -16,6 +16,12 @@ var OtherPlayer = React.createClass({
   },
   componentDidMount: function() {
     socket.on('revealCard',this._revealCard);
+    socket.on('otherRecivedCoins',this._recivedCoins);
+  },
+  recivedCoins:function(num){
+    this.setState({
+      sims:num
+    });
   },
   _revealCard:function(card){
     if(!this.state.cards[0].shown){

@@ -87,6 +87,7 @@ io.on('connection',function(socket){
 		players[getIndex(socket.id)].coins++;
 		console.log(players[getIndex(socket.id)]);
 		socket.emit('recivedCoins',players[getIndex(socket.id)].coins);
+		socket.broadcast.emit('otherRecivedCoins',players[getIndex(socket.id)].coins);
 		io.emit('turnEnd');
 		while(players[turn].hits<2){
 			turn = (turn + 1)%players.length;

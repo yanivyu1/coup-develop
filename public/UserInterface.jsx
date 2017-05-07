@@ -43,7 +43,9 @@ var UserInterface = React.createClass({
   },
   componentWillMount: function() {
     this.setState({
-      play:true
+      play:true,
+      assassinate:this.props.coins > 3,
+      coup:this.props.coins > 7,
     });
   },
   render:function(){
