@@ -37,7 +37,7 @@ var OtherPlayer = React.createClass({
           )
         })}
         <h2>{this.state.name}</h2>
-        <h1>{this.state.sims}</h1>
+        <h1>{this.props.sims}</h1>
       </div>
     );
   }

@@ -32,6 +32,14 @@ var UserInterface = React.createClass({
     this.setState({
       play:false
     });
+
+  },
+  steal:function(){
+    console.log("steal");
+    socket.emit('steal');
+    this.setState({
+      play:false
+    });
   },
   componentWillMount: function() {
     this.setState({

@@ -360,6 +360,13 @@
 	      play: false
 	    });
 	  },
+	  steal: function steal() {
+	    console.log("steal");
+	    socket.emit('steal');
+	    this.setState({
+	      play: false
+	    });
+	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
 	      play: true
@@ -4936,7 +4943,7 @@
 	      React.createElement(
 	        "h1",
 	        null,
-	        this.state.sims
+	        this.props.sims
 	      )
 	    );
 	  }
