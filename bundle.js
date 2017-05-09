@@ -107,7 +107,8 @@
 	      otherPlayers: [],
 	      names: [],
 	      exchange: false,
-	      player: []
+	      player: [],
+	      choosePlayer: false
 	    };
 	  },
 	  _play: function _play() {
@@ -137,6 +138,13 @@
 	      chellangeCard: true,
 	      action: action
 	    });
+	  },
+	  _setAction: function _setAction(player, name) {
+	    console.log(player);
+	    this.setState({
+	      choosePlayer: false
+	    });
+	    socket.emit();
 	  },
 	  _joined: function _joined(name) {
 	    namesTemp.push(name);
@@ -206,6 +214,11 @@
 	    });
 	    console.log(this.state);
 	  },
+	  _choose: function _choose() {
+	    this.setState({
+	      choosePlayer: true
+	    });
+	  },
 	  componentDidMount: function componentDidMount() {
 	    socket.on('swiped', this._swiped);
 	    socket.on('busted', this._busted);
@@ -218,6 +231,7 @@
 	    socket.on('turnEnd', this._endTurn);
 	    socket.on('hasJoined', this._hasJoined);
 	    socket.on('newCards', this._exchangeCards);
+	    socket.on('choose_a_player', this._choose);
 	  },
 	  render: function render() {
 	    return React.createElement(
@@ -238,8 +252,8 @@
 	        'div',
 	        { className: 'otherPlayers' },
 	        this.state.otherPlayers.map(function (player, i) {
-	          return React.createElement(_OtherPlayer2.default, { className: "otherPlayer" + i, name: player.name, sims: player.coins });
-	        })
+	          return React.createElement(_OtherPlayer2.default, { className: "otherPlayer", name: player.name, sims: player.coins, click: this._setAction.bind(this, player.name) });
+	        }.bind(this))
 	      ),
 	      React.createElement(
 	        'div',
@@ -257,6 +271,7 @@
 	        null,
 	        this.state.exchange ? React.createElement(_ExchangeCards2.default, { cards: cardsTemp, length: cardsLength }) : null,
 	        this.state.busted ? React.createElement(Busted, null) : null,
+	        this.state.choosePlayer ? React.createElement(ChoosePlayer, null) : null,
 	        this.state.appear ? React.createElement(_Chellange2.default, { action: this.state.action }) : null,
 	        this.state.chellangeCard ? React.createElement(_ChellangeCard2.default, { action: this.state.action }) : null
 	      ),
@@ -315,6 +330,17 @@
 	    );
 	  }
 	});
+	var ChoosePlayer = React.createClass({
+	  displayName: 'ChoosePlayer',
+
+	  render: function render() {
+	    return React.createElement(
+	      'h1',
+	      { className: 'bustedTitle' },
+	      'Choose a Player'
+	    );
+	  }
+	});
 	ReactDOM.render(React.createElement(Main, null), document.getElementById('main'));
 
 /***/ },
@@ -330,7 +356,7 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      income: false, foreignAid: false, tax: false, steal: false, exchange: false, assassinate: false, coup: false, play: false
+	      income: false, foreignAid: false, tax: false, steal: false, exchange: false, assassinate: true, coup: true, play: false
 	    };
 	  },
 	  getIncome: function getIncome() {
@@ -368,11 +394,13 @@
 	    });
 	  },
 	  componentWillMount: function componentWillMount() {
+	    console.log(this.props);
 	    this.setState({
 	      play: true,
-	      assassinate: this.props.coins > 3,
-	      coup: this.props.coins > 7
+	      assassinate: this.props.coins > 3 ? true : false,
+	      coup: this.props.coins > 7 ? true : false
 	    });
+	    console.log(this.state);
 	  },
 	  render: function render() {
 	    return React.createElement(
@@ -4939,7 +4967,7 @@
 	  render: function render() {
 	    return React.createElement(
 	      "div",
-	      null,
+	      { className: this.props.className, onClick: this.props.click },
 	      this.state.cards.map(function (card) {
 	        return React.createElement("img", { id: card.name, src: "/public/" + card.name, alt: card.name, style: card.style });
 	      }),

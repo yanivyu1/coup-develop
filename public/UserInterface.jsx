@@ -3,7 +3,7 @@ var React = require('react');
 var UserInterface = React.createClass({
   getInitialState: function() {
     return {
-      income:false,foreignAid:false,tax:false,steal:false,exchange:false,assassinate:false,coup:false,play:false
+      income:false,foreignAid:false,tax:false,steal:false,exchange:false,assassinate:true,coup:true,play:false
     };
   },
   getIncome:function(){
@@ -42,11 +42,13 @@ var UserInterface = React.createClass({
     });
   },
   componentWillMount: function() {
+    console.log(this.props);
     this.setState({
       play:true,
-      assassinate:this.props.coins > 3,
-      coup:this.props.coins > 7,
+      assassinate:this.props.coins > 3 ? true : false,
+      coup:this.props.coins > 7 ? true : false,
     });
+    console.log(this.state);
   },
   render:function(){
     return(

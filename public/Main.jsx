@@ -30,7 +30,8 @@ var Main = React.createClass({
       otherPlayers:[],
       names:[],
       exchange:false,
-      player:[]
+      player:[],
+      choosePlayer:false
     };
   },
   _play:function(){
@@ -60,6 +61,13 @@ var Main = React.createClass({
       chellangeCard:true,
       action:action
     });
+  },
+  _setAction:function(player,name){
+    console.log(player);
+    this.setState({
+      choosePlayer:false
+    });
+    socket.emit(this.state.action+'Action',player)
   },
   _joined:function(name){
     namesTemp.push(name);
@@ -129,6 +137,11 @@ var Main = React.createClass({
     });
     console.log(this.state);
   },
+  _choose:function(){
+    this.setState({
+      choosePlayer:true
+    });
+  },
   componentDidMount: function() {
     socket.on('swiped',this._swiped);
     socket.on('busted',this._busted);
@@ -141,6 +154,7 @@ var Main = React.createClass({
     socket.on('turnEnd',this._endTurn);
     socket.on('hasJoined',this._hasJoined);
     socket.on('newCards',this._exchangeCards);
+    socket.on('choose_a_player',this._choose);
   },
   render:function(){
     return(
@@ -155,9 +169,9 @@ var Main = React.createClass({
         <div className="otherPlayers">
           {this.state.otherPlayers.map(function(player,i){
             return(
-              <OtherPlayer className={"otherPlayer"+i} name={player.name} sims={player.coins}/>
+              <OtherPlayer className={"otherPlayer"} name={player.name} sims={player.coins} click={this._setAction.bind(this,player.name)}/>
             )
-          })}
+          }.bind(this))}
         </div>
         <div>
           {this.state.join ? <Join/> : null}
@@ -169,6 +183,7 @@ var Main = React.createClass({
         <div>
           {this.state.exchange ? <ExchangeCards cards={cardsTemp} length={cardsLength}/> : null}
           {this.state.busted ? <Busted/> : null}
+          {this.state.choosePlayer ? <ChoosePlayer/> : null}
           {this.state.appear ? <Chellange action={this.state.action}/> : null}
           {this.state.chellangeCard ? <ChellangeCard action={this.state.action}/> : null}
         </div>
@@ -208,6 +223,13 @@ var Busted = React.createClass({
   render:function(){
     return(
       <h1 className="bustedTitle">Choose a Card</h1>
+    );
+  }
+});
+var ChoosePlayer = React.createClass({
+  render:function(){
+    return(
+      <h1 className="bustedTitle">Choose a Player</h1>
     );
   }
 });

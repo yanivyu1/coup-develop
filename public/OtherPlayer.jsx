@@ -36,7 +36,7 @@ var OtherPlayer = React.createClass({
   },
   render:function(){
     return(
-      <div>
+      <div className={this.props.className} onClick={this.props.click}>
         {this.state.cards.map(function(card){
           return(
               <img  id={card.name} src={"/public/"+card.name} alt={card.name} style={card.style}/>

@@ -14,6 +14,7 @@ var AINames = ["Robert","Patrick","Donna","James","Alex","Gil"];
 var turn = 0;
 var chellangedPlayer;
 var blocked = false;
+var targetPlayer;
 io.on('connection',function(socket){
   console.log(socket.id+" is connected");
   socket.on('disconnect',function(){
@@ -112,6 +113,15 @@ io.on('connection',function(socket){
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellange',"exchange");
 	});
+	socket.on('steal',function(){
+		chellangedPlayer = getIndex(socket.id);
+		socket.emit('choose_a_player');
+	});
+	socket.on('stealAction',function(name){
+		targetPlayer = name;
+		console.log(chellangedPlayer);
+		socket.broadcast.emit('chellange',"steal");
+	});
 	socket.on('allow',function(action){
 		switch(action){
 			case "foreign aid":
@@ -126,6 +136,15 @@ io.on('connection',function(socket){
 				players[turn].coins+=3;
 				console.log(players[getIndex(socket.id)]);
 				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				io.emit('turnEnd');
+				turn = (turn + 1)%players.length;
+				io.to(players[turn].playerId).emit('playTurn');
+				break;
+			case "steal":
+				players[turn].coins+=2;
+				players[getIndexByName(targetPlayer)]-=2;
+				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				io.to(players[getIndexByName(targetPlayer)].playerId).emit('recivedCoins',players[getIndexByName(targetPlayer)].coins);
 				io.emit('turnEnd');
 				turn = (turn + 1)%players.length;
 				io.to(players[turn].playerId).emit('playTurn');
@@ -262,6 +281,13 @@ server.listen(8080);
 function getIndex(id){
 	for(var i=0;i<players.length;i++){
 		if(players[i].playerId === id){
+			return i;
+		}
+	}
+}
+function getIndexByName(name){
+	for(var i=0;i<players.length;i++){
+		if(players[i].name === name){
 			return i;
 		}
 	}
