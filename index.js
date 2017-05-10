@@ -23,7 +23,7 @@ io.on('connection',function(socket){
   });
 	socket.on('join',function(name){
 			console.log(name+" has joined");
-			players.push({type:"human",name:name,playerId:socket.id,coins:2,cards:[],hits:0});
+			players.push({type:"human",name:name,playerId:socket,coins:2,cards:[],hits:0});
 			socket.broadcast.emit('hasJoined',players[getIndex(socket.id)]);
 			socket.emit('joined',players[getIndex(socket.id)].name);
 	});
@@ -77,10 +77,10 @@ io.on('connection',function(socket){
           }
 					console.log(players);
         }
-				io.to(players[i].playerId).emit('begin',players[i]);
+				players[i].playerId.emit('begin',players[i]);
 				console.log(players[i]);
       }
-			io.to(players[turn].playerId).emit('playTurn');
+			players[turn].playerId.emit('playTurn');
     }
   });
 	socket.on('getIncome',function(){
@@ -94,32 +94,32 @@ io.on('connection',function(socket){
 			turn = (turn + 1)%players.length;
 			break;
 		}
-		io.to(players[turn].playerId).emit('playTurn');
+		players[turn].playerId.emit('playTurn');
 	});
 	socket.on('getForeignAid',function(){
 		console.log("foreign aid");
-		chellangedPlayer = getIndex(socket.id);
+		chellangedPlayer = socket;
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellange',"foreign aid");
 	});
 	socket.on('getTax',function(){
 		console.log("tax");
-		chellangedPlayer = getIndex(socket.id);
+		chellangedPlayer = socket;
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellange',"tax");
 	});
 	socket.on('exchange',function(){
-		chellangedPlayer = getIndex(socket.id);
+		chellangedPlayer = socket;
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellange',"exchange");
 	});
 	socket.on('steal',function(){
-		chellangedPlayer = getIndex(socket.id);
-		socket.emit('choose_a_player');
+		chellangedPlayer = socket;
+		socket.emit('choose_a_player','steal');
 	});
 	socket.on('stealAction',function(name){
-		targetPlayer = name;
-		console.log(chellangedPlayer);
+		targetPlayer = players[getIndexByName(name)].playerId;
+		console.log(targetPlayer);
 		socket.broadcast.emit('chellange',"steal");
 	});
 	socket.on('allow',function(action){
@@ -127,27 +127,29 @@ io.on('connection',function(socket){
 			case "foreign aid":
 				players[turn].coins+=2;
 				console.log(players[getIndex(socket.id)]);
-				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				players[turn].playerId.emit('recivedCoins',players[turn].coins);
 				io.emit('turnEnd');
 				turn = (turn + 1)%players.length;
-				io.to(players[turn].playerId).emit('playTurn');
+				players[turn].playerId.emit('playTurn');
 				break;
 			case "tax":
 				players[turn].coins+=3;
 				console.log(players[getIndex(socket.id)]);
-				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
+				players[turn].playerId.emit('recivedCoins',players[turn].coins);
 				io.emit('turnEnd');
 				turn = (turn + 1)%players.length;
-				io.to(players[turn].playerId).emit('playTurn');
+				players[turn].playerId.emit('playTurn');
 				break;
 			case "steal":
+				console.log("steal from "+targetPlayer);
 				players[turn].coins+=2;
 				players[getIndexByName(targetPlayer)]-=2;
-				io.to(players[turn].playerId).emit('recivedCoins',players[turn].coins);
-				io.to(players[getIndexByName(targetPlayer)].playerId).emit('recivedCoins',players[getIndexByName(targetPlayer)].coins);
+				players[turn].playerId.emit('recivedCoins',players[turn].coins);
+				targetPlayer.emit('recivedCoins',players[getIndexByName(targetPlayer)].coins);
 				io.emit('turnEnd');
 				turn = (turn + 1)%players.length;
-				io.to(players[turn].playerId).emit('playTurn');
+				players[turn].playerId.emit('playTurn');
+				console.log(players[getIndex(socket.id)]);
 				break;
 			case "exchange":
 				var swipeCards = [];
@@ -189,23 +191,23 @@ io.on('connection',function(socket){
 					}
 				}
 				console.log(swipeCards[0] +","+swipeCards[1]);
-				var swipeCardsTemp = players[chellangedPlayer].cards;
+				var swipeCardsTemp = players[getIndex(chellangedPlayer.id)].cards;
 				swipeCardsTemp.push(swipeCards[0]);
 				swipeCardsTemp.push(swipeCards[1]);
-				console.log(players[chellangedPlayer].cards.length);
-				io.to(players[chellangedPlayer].playerId).emit('newCards',{cards:swipeCardsTemp,length:players[chellangedPlayer].cards.length});
+				console.log(players[getIndex(chellangedPlayer.id)].cards.length);
+				chellangedPlayer.emit('newCards',{cards:swipeCardsTemp,length:players[getIndex(chellangedPlayer.id)].cards.length});
 				break;
 		}
 	});
 	socket.on('accept',function(){
 		io.emit('turnEnd');
 		turn = (turn + 1)%players.length;
-		io.to(players[turn].playerId).emit('playTurn');
+		players[turn].playerId.emit('playTurn');
 	});
 	socket.on('block',function(action){
 		console.log("block "+action);
 		blocked = true;
-		chellangedPlayer = getIndex(socket.id);
+		chellangedPlayer = socket;
 		console.log(chellangedPlayer);
 		socket.broadcast.emit('chellangeCard',action);
 	});
@@ -213,36 +215,45 @@ io.on('connection',function(socket){
 		console.log(action+" chellanged");
 		switch(action){
 			case "foreign aid":
-				if(players[chellangedPlayer].cards[0] != "Duke" && players[chellangedPlayer].cards[1] != "Duke"){
-					players[chellangedPlayer].hits++;
-					io.to(players[chellangedPlayer].playerId).emit('busted');
+				if(players[getIndex(chellangedPlayer.id)].cards[0] != "Duke" && players[getIndex(chellangedPlayer.id)].cards[1] != "Duke"){
+					players[getIndex(chellangedPlayer.id)].hits++;
+					chellangedPlayer.emit('busted');
 				}
 				else{
 					players[getIndex(socket.id)].hits++;
 					socket.emit('busted');
- 					console.log(players[chellangedPlayer]);
+ 					console.log(players[getIndex(chellangedPlayer.id)]);
 				}
 				break;
 			case "tax":
-				if(blocked && (players[chellangedPlayer].cards[0] != "Duke" && players[chellangedPlayer].cards[1] != "Duke")){
-					io.to(players[chellangedPlayer].playerId).emit('busted');
+				if(blocked && (players[getIndex(chellangedPlayer.id)].cards[0] != "Duke" && players[getIndex(chellangedPlayer.id)].cards[1] != "Duke")){
+					chellangedPlayer.emit('busted');
 				}
 				else{
 					socket.emit('busted');
-					console.log(players[chellangedPlayer]);
+					console.log(players[getIndex(chellangedPlayer.id)]);
 				}
 				break;
 			case "exchange":
-			if(players[chellangedPlayer].cards[0] != "Ambessador" && players[chellangedPlayer].cards[1] != "Ambessador"){
-				players[chellangedPlayer].hits++;
-				io.to(players[chellangedPlayer].playerId).emit('busted');
-			}
-			else{
-				players[getIndex(socket.id)].hits++;
-				socket.emit('busted');
-				console.log(players[chellangedPlayer]);
-			}
-			break;
+				if(players[getIndex(chellangedPlayer.id)].cards[0] != "Ambessador" && players[getIndex(chellangedPlayer.id)].cards[1] != "Ambessador"){
+					players[getIndex(chellangedPlayer.id)].hits++;
+					chellangedPlayer.emit('busted');
+				}
+				else{
+					players[getIndex(socket.id)].hits++;
+					socket.emit('busted');
+					console.log(players[getIndex(chellangedPlayer.id)]);
+				}
+				break;
+			case "steal":
+				if(blocked && (players[getIndex(chellangedPlayer.id)].card[0] != "Ambessador" && players[getIndex(chellangedPlayer.id)].card[1] != "Ambessador")){
+					players[getIndex(chellangedPlayer.id)].hits++;
+					chellangedPlayer.emit('busted');
+				}
+				else if(blocked == false && (players[getIndex(chellangedPlayer.id)].card[0] != "Captain" && players[getIndex(chellangedPlayer.id)].card[1] != "Captain")){
+					players[getIndex(chellangedPlayer.id)].hits++;
+					chellangedPlayer.emit('busted');
+				}
 		}
 	});
 	socket.on('showCard',function(card){
@@ -255,7 +266,7 @@ io.on('connection',function(socket){
 			turn = (turn + 1)%players.length;
 			break;
 		}
-		io.to(players[turn].playerId).emit('playTurn');
+		players[turn].playerId.emit('playTurn');
 	});
 	socket.on('swipeCards',function(object){
 		console.log(object);
@@ -274,13 +285,13 @@ io.on('connection',function(socket){
 		socket.emit('swiped',players[getIndex(socket.id)]);
 		io.emit('turnEnd');
 		turn = (turn + 1)%players.length;
-		io.to(players[turn].playerId).emit('playTurn');
+		players[turn].playerId.emit('playTurn');
 	});
 });
 server.listen(8080);
 function getIndex(id){
 	for(var i=0;i<players.length;i++){
-		if(players[i].playerId === id){
+		if(players[i].playerId.id === id){
 			return i;
 		}
 	}
@@ -288,6 +299,7 @@ function getIndex(id){
 function getIndexByName(name){
 	for(var i=0;i<players.length;i++){
 		if(players[i].name === name){
+			console.log("getIndexByName"+i);
 			return i;
 		}
 	}

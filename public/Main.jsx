@@ -63,7 +63,7 @@ var Main = React.createClass({
     });
   },
   _setAction:function(player,name){
-    console.log(player);
+    console.log(player+" was clicked for "+this.state.action);
     this.setState({
       choosePlayer:false
     });
@@ -89,6 +89,9 @@ var Main = React.createClass({
     });
   },
   _recivedCoins:function(num){
+    this.setState({
+      myTurn:true 
+    });
     this.setState({
       coins:num,
       myTurn:false
@@ -137,9 +140,10 @@ var Main = React.createClass({
     });
     console.log(this.state);
   },
-  _choose:function(){
+  _choose:function(action){
     this.setState({
-      choosePlayer:true
+      choosePlayer:true,
+      action:action
     });
   },
   componentDidMount: function() {

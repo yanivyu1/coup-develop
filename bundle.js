@@ -140,11 +140,11 @@
 	    });
 	  },
 	  _setAction: function _setAction(player, name) {
-	    console.log(player);
+	    console.log(player + " was clicked for " + this.state.action);
 	    this.setState({
 	      choosePlayer: false
 	    });
-	    socket.emit();
+	    socket.emit(this.state.action + 'Action', player);
 	  },
 	  _joined: function _joined(name) {
 	    namesTemp.push(name);
@@ -166,6 +166,9 @@
 	    });
 	  },
 	  _recivedCoins: function _recivedCoins(num) {
+	    this.setState({
+	      myTurn: true
+	    });
 	    this.setState({
 	      coins: num,
 	      myTurn: false
@@ -214,9 +217,10 @@
 	    });
 	    console.log(this.state);
 	  },
-	  _choose: function _choose() {
+	  _choose: function _choose(action) {
 	    this.setState({
-	      choosePlayer: true
+	      choosePlayer: true,
+	      action: action
 	    });
 	  },
 	  componentDidMount: function componentDidMount() {
