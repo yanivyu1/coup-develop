@@ -277,7 +277,7 @@ io.on('connection',function(socket){
 		players[getIndex(socket.id)].playerInfo.cards = [];
 		for(var i=0;i<object.length;i++){
 			if(object[i].swipe == 1){
-					players[getIndex(socket.id)].playerInfo.cards.push(object[i].playerInfo.name);
+					players[getIndex(socket.id)].playerInfo.cards.push(object[i].name);
 					swipeCount++;
 					cards[getName(object[i].name)]--;
 			}
