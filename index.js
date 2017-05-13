@@ -25,7 +25,7 @@ io.on('connection',function(socket){
 			console.log(name+" has joined");
 			players.push({playerInfo:{type:"human",name:name,coins:2,cards:[],hits:0},playerId:socket});
 			console.log(players);
-			socket.broadcast.emit('hasJoined',players[players.length-1].playerInfo);
+			socket.broadcast.emit('hasJoined',{player:players[players.length-1].playerInfo,id:socket.id});
 			console.log("1");
 			socket.emit('joined',players[players.length-1].playerInfo.name);
 	});
@@ -120,8 +120,8 @@ io.on('connection',function(socket){
 		chellangedPlayer = socket;
 		socket.emit('choose_a_player','steal');
 	});
-	socket.on('stealAction',function(name){
-		targetPlayer = players[getIndexByName(name)].playerId;
+	socket.on('stealAction',function(id){
+		targetPlayer = players[getIndex(id)].playerId;
 		console.log(targetPlayer);
 		socket.broadcast.emit('chellange',"steal");
 	});
@@ -148,7 +148,7 @@ io.on('connection',function(socket){
 				players[turn].playerInfo.coins+=2;
 				players[getIndexByName(targetPlayer)]-=2;
 				players[turn].playerId.emit('recivedCoins',players[turn].playerInfo.coins);
-				targetPlayer.emit('recivedCoins',players[getIndexByName(targetPlayer)].playerInfo.coins);
+				targetPlayer.emit('recivedCoins',players[getIndex(targetPlayer.id)].playerInfo.coins);
 				io.emit('turnEnd');
 				turn = (turn + 1)%players.length;
 				players[turn].playerId.emit('playTurn');
@@ -285,7 +285,7 @@ io.on('connection',function(socket){
 				cards[getName(object[i].name)]++;
 			}
 		}
-		socket.emit('swiped',players[getIndex(socket.id)]);
+		socket.emit('swiped',players[getIndex(socket.id)].playerInfo);
 		io.emit('turnEnd');
 		turn = (turn + 1)%players.length;
 		io.to(players[turn].playerId).emit('playTurn');

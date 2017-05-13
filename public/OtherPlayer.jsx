@@ -4,14 +4,16 @@ var OtherPlayer = React.createClass({
     return{
       name:null,
       cards:[],
-      sims:0
+      sims:0,
+      id:null
     };
   },
   componentWillMount: function() {
     this.setState({
       cards:[{name:"card-back.jpg",shown:false,style:{opacity:1}},{name:"card-back.jpg",shown:false,style:{opacity:1}}],
       name:this.props.name,
-      sims:this.props.sims
+      sims:this.props.sims,
+      id:this.props.id
     });
   },
   componentDidMount: function() {
@@ -36,14 +38,14 @@ var OtherPlayer = React.createClass({
   },
   render:function(){
     return(
-      <div className={this.props.className} onClick={this.props.click}>
+      <div className={this.props.className} onClick={this.props.click} id={this.props.id}>
         {this.state.cards.map(function(card){
           return(
-              <img  id={card.name} src={"/public/"+card.name} alt={card.name} style={card.style}/>
+              <img  id={card.id} src={"/public/"+card.name} alt={card.name} style={card.style}/>
           )
         })}
         <h2>{this.state.name}</h2>
-        <h1>{this.props.sims}</h1>
+        <h1>{this.state.sims}</h1>
       </div>
     );
   }

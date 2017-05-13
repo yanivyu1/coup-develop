@@ -62,8 +62,8 @@ var Main = React.createClass({
       action:action
     });
   },
-  _setAction:function(player,name){
-    console.log(player+" was clicked for "+this.state.action);
+  _setAction:function(player,id){
+    console.log(player);
     this.setState({
       choosePlayer:false
     });
@@ -90,7 +90,7 @@ var Main = React.createClass({
   },
   _recivedCoins:function(num){
     this.setState({
-      myTurn:true 
+      myTurn:true
     });
     this.setState({
       coins:num,
@@ -171,9 +171,9 @@ var Main = React.createClass({
           <RoomInterface names={this.state.names} visible={this.state.addAiPlayer}/>
         </div>
         <div className="otherPlayers">
-          {this.state.otherPlayers.map(function(player,i){
+          {this.state.otherPlayers.map(function(player){
             return(
-              <OtherPlayer className={"otherPlayer"} name={player.name} sims={player.coins} click={this._setAction.bind(this,player.name)}/>
+              <OtherPlayer id={player.id} className={"otherPlayer"} name={player.player.name} sims={player.player.coins} click={this._setAction.bind(this,player.id)}/>
             )
           }.bind(this))}
         </div>

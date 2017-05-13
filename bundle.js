@@ -139,8 +139,8 @@
 	      action: action
 	    });
 	  },
-	  _setAction: function _setAction(player, name) {
-	    console.log(player + " was clicked for " + this.state.action);
+	  _setAction: function _setAction(player, id) {
+	    console.log(player);
 	    this.setState({
 	      choosePlayer: false
 	    });
@@ -255,8 +255,8 @@
 	      React.createElement(
 	        'div',
 	        { className: 'otherPlayers' },
-	        this.state.otherPlayers.map(function (player, i) {
-	          return React.createElement(_OtherPlayer2.default, { className: "otherPlayer", name: player.name, sims: player.coins, click: this._setAction.bind(this, player.name) });
+	        this.state.otherPlayers.map(function (player) {
+	          return React.createElement(_OtherPlayer2.default, { id: player.id, className: "otherPlayer", name: player.player.name, sims: player.player.coins, click: this._setAction.bind(this, player.id) });
 	        }.bind(this))
 	      ),
 	      React.createElement(
@@ -4939,14 +4939,16 @@
 	    return {
 	      name: null,
 	      cards: [],
-	      sims: 0
+	      sims: 0,
+	      id: null
 	    };
 	  },
 	  componentWillMount: function componentWillMount() {
 	    this.setState({
 	      cards: [{ name: "card-back.jpg", shown: false, style: { opacity: 1 } }, { name: "card-back.jpg", shown: false, style: { opacity: 1 } }],
 	      name: this.props.name,
-	      sims: this.props.sims
+	      sims: this.props.sims,
+	      id: this.props.id
 	    });
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -4971,9 +4973,9 @@
 	  render: function render() {
 	    return React.createElement(
 	      "div",
-	      { className: this.props.className, onClick: this.props.click },
+	      { className: this.props.className, onClick: this.props.click, id: this.props.id },
 	      this.state.cards.map(function (card) {
-	        return React.createElement("img", { id: card.name, src: "/public/" + card.name, alt: card.name, style: card.style });
+	        return React.createElement("img", { id: card.id, src: "/public/" + card.name, alt: card.name, style: card.style });
 	      }),
 	      React.createElement(
 	        "h2",
@@ -4983,7 +4985,7 @@
 	      React.createElement(
 	        "h1",
 	        null,
-	        this.props.sims
+	        this.state.sims
 	      )
 	    );
 	  }
